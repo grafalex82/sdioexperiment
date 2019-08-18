@@ -1,5 +1,6 @@
 #include <stm32f1xx_hal.h>
-#include <stm32f1xx_hal_gpio.h>
+#include <stm32f1xx_ll_gpio.h>
+#include <stm32f1xx_ll_usart.h>
 #include <stm32f1xx_hal_rcc.h>
 #include <stm32f1xx_hal_rcc_ex.h>
 #include <stm32f1xx_hal_flash.h>
@@ -7,8 +8,17 @@
 
 #include "BoardInit.h"
 
+// Pin constants
+static GPIO_TypeDef * const		TX_PIN_PORT		= GPIOA;
+static const uint32_t			TX_PIN_NUM		= LL_GPIO_PIN_9;
+static GPIO_TypeDef * const		RX_PIN_PORT		= GPIOA;
+static const uint32_t			RX_PIN_NUM		= LL_GPIO_PIN_10;
+static GPIO_TypeDef * const		ENABLE_PIN_PORT	= GPIOB;
+static const uint32_t			ENABLE_PIN_NUM	= LL_GPIO_PIN_9;
+
+
 // Set up board clocks
-void SystemClock_Config(void)
+void InitClock(void)
 {
 	// Set up external oscillator to 72 MHz
 	RCC_OscInitTypeDef RCC_OscInitStruct;
@@ -48,13 +58,41 @@ void SystemClock_Config(void)
 	HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
 }
 
+void InitUART()
+{
+	// Enable clocking of corresponding periperhal
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	__HAL_RCC_USART1_CLK_ENABLE();
+
+	// Init pins in alternate function mode
+	LL_GPIO_SetPinMode(TX_PIN_PORT, TX_PIN_NUM, LL_GPIO_MODE_ALTERNATE);	// TX pin
+	LL_GPIO_SetPinSpeed(TX_PIN_PORT, TX_PIN_NUM, LL_GPIO_SPEED_FREQ_HIGH);
+	LL_GPIO_SetPinOutputType(TX_PIN_PORT, TX_PIN_NUM, LL_GPIO_OUTPUT_PUSHPULL);
+
+	LL_GPIO_SetPinMode(RX_PIN_PORT, RX_PIN_NUM, LL_GPIO_MODE_INPUT);		// RX pin
+
+	// Prepare for initialization
+	LL_USART_Disable(USART1);
+
+	// Init
+	LL_USART_SetBaudRate(USART1, HAL_RCC_GetPCLK2Freq(), 115200);
+	LL_USART_SetDataWidth(USART1, LL_USART_DATAWIDTH_8B);
+	LL_USART_SetStopBitsLength(USART1, LL_USART_STOPBITS_1);
+	LL_USART_SetParity(USART1, LL_USART_PARITY_NONE);
+	LL_USART_SetTransferDirection(USART1, LL_USART_DIRECTION_TX_RX);
+	LL_USART_SetHWFlowCtrl(USART1, LL_USART_HWCONTROL_NONE);
+
+	// Finally enable the peripheral
+	LL_USART_Enable(USART1);
+}
+
 void InitBoard()
 {
-	HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
-
 	// Initialize board and HAL
 	HAL_Init();
-	SystemClock_Config();
+	InitClock();
+	InitUART();
 }
 
 extern "C"

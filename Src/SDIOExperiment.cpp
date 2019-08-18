@@ -3,6 +3,8 @@
 #include <stm32f1xx_hal.h>
 #include <stm32f1xx_hal_gpio.h>
 
+#include <stm32f1xx_ll_usart.h>
+
 #define LED4_Pin GPIO_PIN_4
 #define LED4_GPIO_Port GPIOA
 #define LED3_Pin GPIO_PIN_4
@@ -70,6 +72,8 @@ int main(void)
 		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
 		HAL_Delay(500);
 
+		LL_USART_TransmitData8(USART1, 'A');
+
 		HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_RESET);
 		HAL_Delay(500);
 		HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
@@ -78,5 +82,7 @@ int main(void)
 		HAL_Delay(500);
 		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
 		HAL_Delay(500);
+
+		LL_USART_TransmitData8(USART1, 'B');
 	}
 }
