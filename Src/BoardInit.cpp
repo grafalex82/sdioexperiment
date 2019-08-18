@@ -13,8 +13,6 @@ static GPIO_TypeDef * const		TX_PIN_PORT		= GPIOA;
 static const uint32_t			TX_PIN_NUM		= LL_GPIO_PIN_9;
 static GPIO_TypeDef * const		RX_PIN_PORT		= GPIOA;
 static const uint32_t			RX_PIN_NUM		= LL_GPIO_PIN_10;
-static GPIO_TypeDef * const		ENABLE_PIN_PORT	= GPIOB;
-static const uint32_t			ENABLE_PIN_NUM	= LL_GPIO_PIN_9;
 
 
 // Set up board clocks
@@ -62,7 +60,6 @@ void InitUART()
 {
 	// Enable clocking of corresponding periperhal
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_GPIOB_CLK_ENABLE();
 	__HAL_RCC_USART1_CLK_ENABLE();
 
 	// Init pins in alternate function mode
