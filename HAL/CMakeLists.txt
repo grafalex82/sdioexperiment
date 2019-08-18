@@ -92,7 +92,7 @@ SET(HAL_SRC
 #	STM32F1/HAL_Src/stm32f1xx_hal_eth.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_flash.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_flash_ex.c
-#	STM32F1/HAL_Src/stm32f1xx_hal_gpio.c
+	STM32F1/HAL_Src/stm32f1xx_hal_gpio.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_gpio_ex.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_hcd.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_i2c.c
