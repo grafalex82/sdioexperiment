@@ -1,9 +1,9 @@
 #include "BoardInit.h"
 
-#include <stm32f1xx_hal.h>
-
 #include <stm32f1xx_ll_gpio.h>
 #include <stm32f1xx_ll_usart.h>
+#include <stm32f1xx_ll_bus.h>
+#include <stm32f1xx_hal.h>
 
 // Pin constants
 static GPIO_TypeDef * const		LED1_PORT		= GPIOB;
@@ -19,9 +19,9 @@ static const uint32_t			LED4_PIN		= LL_GPIO_PIN_4;
 static void MX_GPIO_Init(void)
 {
 	// Enable clocking of corresponding periperhal
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-	__HAL_RCC_GPIOC_CLK_ENABLE();
+	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
+	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOB);
+	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOC);
 
 	LL_GPIO_SetPinMode(LED1_PORT, LED1_PIN, LL_GPIO_MODE_OUTPUT);
 	LL_GPIO_SetPinOutputType(LED1_PORT, LED1_PIN, LL_GPIO_OUTPUT_OPENDRAIN);

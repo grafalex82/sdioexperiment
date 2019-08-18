@@ -1,6 +1,8 @@
 #include <stm32f1xx_hal.h>
 #include <stm32f1xx_ll_gpio.h>
 #include <stm32f1xx_ll_usart.h>
+#include <stm32f1xx_ll_bus.h>
+
 #include <stm32f1xx_hal_rcc.h>
 #include <stm32f1xx_hal_rcc_ex.h>
 #include <stm32f1xx_hal_flash.h>
@@ -59,8 +61,7 @@ void InitClock(void)
 void InitUART()
 {
 	// Enable clocking of corresponding periperhal
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_USART1_CLK_ENABLE();
+	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA | LL_APB2_GRP1_PERIPH_USART1);
 
 	// Init pins in alternate function mode
 	LL_GPIO_SetPinMode(TX_PIN_PORT, TX_PIN_NUM, LL_GPIO_MODE_ALTERNATE);	// TX pin
