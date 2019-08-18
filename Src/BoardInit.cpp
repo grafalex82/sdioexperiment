@@ -105,4 +105,26 @@ extern "C"
 	{
 
 	}
+
+	void uartSendOneByte(char ch)
+	{
+		LL_USART_TransmitData8(USART1, ch);
+		while(LL_USART_IsActiveFlag_TXE(USART1) == 0)
+			;
+	}
+
+	int _write(int fd, char* ptr, int len)
+	{
+		(void)fd;
+
+		int i = 0;
+		while (ptr[i] && (i < len))
+		{
+			uartSendOneByte(ptr[i]);
+			if (ptr[i] == '\n')
+				uartSendOneByte('\r');
+			i++;
+		}
+		return len;
+	}
 }

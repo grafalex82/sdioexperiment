@@ -5,6 +5,8 @@
 #include <stm32f1xx_ll_bus.h>
 #include <stm32f1xx_hal.h>
 
+#include <stdio.h>
+
 // Pin constants
 static GPIO_TypeDef * const		LED1_PORT		= GPIOB;
 static const uint32_t			LED1_PIN		= LL_GPIO_PIN_11;
@@ -46,6 +48,7 @@ int main(void)
 	InitBoard();
 	MX_GPIO_Init();
 
+	int i=0;
 	while(true)
 	{
 		LL_GPIO_ResetOutputPin(LED1_PORT, LED1_PIN);
@@ -57,7 +60,7 @@ int main(void)
 		LL_GPIO_ResetOutputPin(LED4_PORT, LED4_PIN);
 		HAL_Delay(500);
 
-		LL_USART_TransmitData8(USART1, 'A');
+		printf("Test %d\n", i++);
 
 		LL_GPIO_SetOutputPin(LED1_PORT, LED1_PIN);
 		HAL_Delay(500);
@@ -67,7 +70,5 @@ int main(void)
 		HAL_Delay(500);
 		LL_GPIO_SetOutputPin(LED4_PORT, LED4_PIN);
 		HAL_Delay(500);
-
-		LL_USART_TransmitData8(USART1, 'B');
 	}
 }

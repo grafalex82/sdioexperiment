@@ -2,7 +2,7 @@ SET(CMAKE_C_FLAGS "-mthumb -fno-builtin -mcpu=cortex-m3 -Wall -std=gnu99 -ffunct
 SET(CMAKE_CXX_FLAGS "-mthumb -fno-builtin -mcpu=cortex-m3 -Wall -std=c++11 -ffunction-sections -fdata-sections -fomit-frame-pointer -mabi=aapcs -fno-unroll-loops -ffast-math -fno-rtti -fno-exceptions -fno-use-cxa-atexit -fno-threadsafe-statics -march=armv7-m --param max-inline-insns-single=500" CACHE INTERNAL "cxx compiler flags")
 SET(CMAKE_ASM_FLAGS "-mthumb -mcpu=cortex-m3 -x assembler-with-cpp" CACHE INTERNAL "asm compiler flags")
 
-SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections -mthumb -mcpu=cortex-m3 -march=armv7-m -mabi=aapcs -Wl,--warn-common -Wl,--warn-section-align" CACHE INTERNAL "executable linker flags")
+SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections -mthumb -mcpu=cortex-m3 -march=armv7-m -mabi=aapcs -specs=nano.specs -specs=nosys.specs -Wl,--warn-common -Wl,--warn-section-align" CACHE INTERNAL "executable linker flags")
 SET(CMAKE_MODULE_LINKER_FLAGS "-mthumb -mcpu=cortex-m3 -march=armv7-m -lgcc -mabi=aapcs" CACHE INTERNAL "module linker flags")
 SET(CMAKE_SHARED_LINKER_FLAGS "-mthumb -mcpu=cortex-m3 -march=armv7-m -lgcc -mabi=aapcs" CACHE INTERNAL "shared linker flags")
 
