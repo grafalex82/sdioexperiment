@@ -49,12 +49,7 @@ void InitClock(void)
 	PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL_DIV1_5;
 	HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
 
-	// Set up SysTTick to 1 ms
-	// TODO: Do we really need this? SysTick is initialized multiple times in HAL
-	HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-	HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
-	// SysTick_IRQn interrupt configuration - setting SysTick as lower priority to satisfy FreeRTOS requirements
+	// SysTick_IRQn interrupt configuration - setting SysTick as lower priority
 	HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
 }
 
