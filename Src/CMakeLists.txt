@@ -5,6 +5,8 @@ SET(SOURCE_FILES
 	SDIOExperiment.cpp
 	BoardInit.cpp
 	BoardInit.h
+	SPIDriver.cpp
+	SPIDriver.h
 )
 
 INCLUDE_DIRECTORIES(
