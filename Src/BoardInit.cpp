@@ -103,9 +103,12 @@ extern "C"
 
 	void uartSendOneByte(char ch)
 	{
-		LL_USART_TransmitData8(USART1, ch);
+		// Wait until previous byte is transmitted
 		while(LL_USART_IsActiveFlag_TXE(USART1) == 0)
 			;
+
+		// Send the byte to output shift register
+		LL_USART_TransmitData8(USART1, ch);
 	}
 
 	int _write(int fd, char* ptr, int len)
