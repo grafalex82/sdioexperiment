@@ -1,5 +1,5 @@
 #include "BoardInit.h"
-#include "SPIDriver.h"
+#include "SDCard.h".h"
 
 #include <stm32f1xx_ll_gpio.h>
 #include <stm32f1xx_ll_usart.h>
@@ -55,7 +55,7 @@ int main(void)
 
 	HAL_Delay(1500);
 
-	SPIDriver driver;
+	SDCard card;
 
 	while(true)
 	{
@@ -64,7 +64,8 @@ int main(void)
 		LL_GPIO_SetOutputPin(LED1_PORT, LED1_PIN);
 
 		printf("Initialize card\n");
-		driver.initCard();
+		card.init();
+		printf("Card initialized successfully\n");
 
 		HAL_Delay(1500);
 	}

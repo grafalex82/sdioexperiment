@@ -3,6 +3,7 @@
 #include <stm32f1xx_ll_spi.h>
 #include <stm32f1xx_ll_bus.h>
 #include <stm32f1xx_ll_gpio.h>
+#include <stm32f1xx_ll_sdmmc.h>
 
 #include <stdio.h>
 
@@ -121,7 +122,37 @@ void SPIDriver::receive(uint8_t * buf, size_t len)
 	}
 }
 
-bool SPIDriver::initCard()
+uint8_t SPIDriver::CRC7(uint8_t * buf, size_t len)
+{
+	uint8_t crc = 0;
+	for (uint8_t i = 0; i < len; i++)
+	{
+		uint8_t d = buf[i];
+		for (uint8_t j = 0; j < 8; j++)
+		{
+			crc <<= 1;
+			if ((d & 0x80) ^ (crc & 0x80))
+			  crc ^= 0x09;
+			d <<= 1;
+		}
+	}
+	return (crc << 1) | 1; // Last bit is a stop bit
+}
+
+void SPIDriver::sendCommand(int cmd, int arg)
+{
+	uint8_t buf[6];
+	buf[0] = 0x40 | cmd; // 0x40 - direction bit is 1 - from host to card
+	buf[1] = (arg >> 24) & 0xff;
+	buf[2] = (arg >> 16) & 0xff;
+	buf[3] = (arg >> 8) & 0xff;
+	buf[4] = arg & 0xff;
+	buf[5] = CRC7(buf, 5);
+
+	transmit(buf, sizeof(buf));
+}
+
+void SPIDriver::initConnection()
 {
 	deselectCard();
 
@@ -129,18 +160,17 @@ bool SPIDriver::initCard()
 		transmitByte(0xff);
 
 	selectCard();
+}
 
-	//printf("Sending CMD0\n");
-	static const uint8_t cmd[] = { 0x40 | 0x00 /* CMD0 */, 0x00, 0x00, 0x00, 0x00 /* ARG = 0 */, (0x4A << 1) | 1 /* CRC7 + end bit */ };
-	transmit(cmd, sizeof(cmd));
+void SPIDriver::cmd0_goIdleState()
+{
+	sendCommand(SDMMC_CMD_GO_IDLE_STATE, 0);
 
-	char ch = 0;
-	do
-	{
-		ch = receiveByte();
-		printf("Received byte %02x\n", ch);
-	}
-	while(ch != 0x01);
+	while(receiveByte() != 0x01)
+		;
+}
 
+bool SPIDriver::cmd8_sendInterfaceConditions()
+{
 	return true;
 }
