@@ -170,18 +170,15 @@ uint8_t SPIDriver::waitForNonFFByte()
 	return ch;
 }
 
-void SPIDriver::initConnection()
-{
-	deselectCard();
-
-	for(int i=0; i<10; i++)
-		transmitByte(0xff);
-
-	selectCard();
-}
-
 void SPIDriver::cmd0_goIdleState()
 {
+	// To switch the card to SPI mode it is required to send at least 74 clock pulses while card is desetected
+	deselectCard();
+	for(int i=0; i<10; i++)
+		transmitByte(0xff);
+	selectCard();
+
+	// Send CMD0 while card is selected (CS = 0)
 	sendCommand(SDMMC_CMD_GO_IDLE_STATE, 0);
 
 	// Wait for R1 response (1 byte)
@@ -204,7 +201,7 @@ bool SPIDriver::cmd8_sendInterfaceConditions()
 	r7 |= receiveByte();
 
 	// TODO: Assert r7 = 0x1aa - the card confirms 3.3V voltage and 0xAA check pattern
-	// printf("R7 response: 0x%08x\n", r7);
+	 printf("R7 response: 0x%08x\n", (unsigned int)r7);
 
 	return true;
 }

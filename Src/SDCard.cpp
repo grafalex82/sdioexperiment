@@ -9,8 +9,6 @@ SDCard::SDCard()
 
 bool SDCard::init()
 {
-	driver.initConnection();
-
 	printf("Sending soft reset command (GO IDLE)\n");
 	driver.cmd0_goIdleState();
 
