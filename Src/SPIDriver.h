@@ -20,6 +20,8 @@ private:
 	static uint8_t CRC7(uint8_t * buf, size_t len);
 	void transmitByte(uint8_t byte);
 	uint8_t receiveByte();
+	uint8_t waitForNonFFByte();
+	void waitForR1();
 	void sendCommand(int cmd, int arg);
 	void selectCard();
 	void deselectCard();

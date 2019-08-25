@@ -21,6 +21,9 @@ static GPIO_TypeDef * const		ENABLE_PIN_PORT		= GPIOA;
 static const uint32_t			ENABLE_PIN_NUM		= LL_GPIO_PIN_15;
 
 
+static const uint8_t R1_IDLE_STATE		= 0x01;
+static const uint8_t R1_ILLEGAL_COMMAND = 0x04;
+
 SPIDriver::SPIDriver()
 {
 	// Enable clocking of corresponding periperhal
@@ -152,6 +155,21 @@ void SPIDriver::sendCommand(int cmd, int arg)
 	transmit(buf, sizeof(buf));
 }
 
+void SPIDriver::waitForR1()
+{
+	while(receiveByte() != R1_IDLE_STATE)
+		;
+}
+
+uint8_t SPIDriver::waitForNonFFByte()
+{
+	uint8_t ch;
+	while((ch = receiveByte()) == 0xff)
+		;
+
+	return ch;
+}
+
 void SPIDriver::initConnection()
 {
 	deselectCard();
@@ -166,11 +184,26 @@ void SPIDriver::cmd0_goIdleState()
 {
 	sendCommand(SDMMC_CMD_GO_IDLE_STATE, 0);
 
-	while(receiveByte() != 0x01)
-		;
+	// Wait for R1 response (1 byte)
+	waitForR1();
 }
 
 bool SPIDriver::cmd8_sendInterfaceConditions()
 {
+	sendCommand(SDMMC_CMD_HS_SEND_EXT_CSD, 0x1AA); //0x01 - request voltage3.3V, 0xAA - check pattern
+
+	// Wait for R7 response (R1 + 4 bytes of data)
+	// If the card supports CMD8 it will return 5 bytes
+	// if not - it will return R1 with ILLEGAL_COMMAND flag set
+	if(waitForNonFFByte() == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE))
+		return false;
+
+	uint32_t r7 = receiveByte() << 24;
+	r7 |= receiveByte() << 16;
+	r7 |= receiveByte() << 8;
+	r7 |= receiveByte();
+
+	printf("R7 response: 0x%08x\n", r7);
+
 	return true;
 }
