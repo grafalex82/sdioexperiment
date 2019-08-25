@@ -203,7 +203,8 @@ bool SPIDriver::cmd8_sendInterfaceConditions()
 	r7 |= receiveByte() << 8;
 	r7 |= receiveByte();
 
-	printf("R7 response: 0x%08x\n", r7);
+	// TODO: Assert r7 = 0x1aa - the card confirms 3.3V voltage and 0xAA check pattern
+	// printf("R7 response: 0x%08x\n", r7);
 
 	return true;
 }
