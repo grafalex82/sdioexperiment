@@ -9,6 +9,7 @@ class SPIDriver
 public:
 	SPIDriver();
 
+	void init();
 	void cmd0_goIdleState();
 	bool cmd8_sendInterfaceConditions();
 

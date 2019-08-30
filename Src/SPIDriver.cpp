@@ -17,24 +17,18 @@ static const uint32_t			SCK_PIN_NUM			= LL_GPIO_PIN_5;
 static GPIO_TypeDef * const		CS_PIN_PORT			= GPIOC;
 static const uint32_t			CS_PIN_NUM			= LL_GPIO_PIN_11;
 
-static GPIO_TypeDef * const		ENABLE_PIN_PORT		= GPIOA;
-static const uint32_t			ENABLE_PIN_NUM		= LL_GPIO_PIN_15;
-
-
 static const uint8_t R1_IDLE_STATE		= 0x01;
 static const uint8_t R1_ILLEGAL_COMMAND = 0x04;
 
 SPIDriver::SPIDriver()
 {
+}
+
+void SPIDriver::init()
+{
 	// Enable clocking of corresponding periperhal
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA | LL_APB2_GRP1_PERIPH_GPIOC);
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SPI1);
-
-	// Enable SD card power
-	LL_GPIO_SetPinMode(ENABLE_PIN_PORT, ENABLE_PIN_NUM, LL_GPIO_MODE_OUTPUT);
-	LL_GPIO_SetPinOutputType(ENABLE_PIN_PORT, ENABLE_PIN_NUM, LL_GPIO_OUTPUT_PUSHPULL);
-	LL_GPIO_SetPinSpeed(ENABLE_PIN_PORT, ENABLE_PIN_NUM, LL_GPIO_SPEED_FREQ_LOW);
-	LL_GPIO_ResetOutputPin(ENABLE_PIN_PORT, ENABLE_PIN_NUM);
 
 	// Init pins
 	LL_GPIO_SetPinMode(MOSI_PIN_PORT, MOSI_PIN_NUM, LL_GPIO_MODE_ALTERNATE);			// MOSI: AF PP
@@ -70,6 +64,11 @@ SPIDriver::SPIDriver()
 
 	// Now enable it
 	LL_SPI_Enable(SPI1);
+
+	// Card power mgmt requires sending at least 74 clock pulses before the first command. We will send 80 pulses
+	for(int i=0; i<10; i++)
+		transmitByte(0xff);
+
 }
 
 inline void SPIDriver::selectCard()
@@ -173,9 +172,6 @@ uint8_t SPIDriver::waitForNonFFByte()
 void SPIDriver::cmd0_goIdleState()
 {
 	// To switch the card to SPI mode it is required to send at least 74 clock pulses while card is desetected
-	deselectCard();
-	for(int i=0; i<10; i++)
-		transmitByte(0xff);
 	selectCard();
 
 	// Send CMD0 while card is selected (CS = 0)

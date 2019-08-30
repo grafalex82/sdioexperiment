@@ -1,5 +1,5 @@
 #include "BoardInit.h"
-#include "SDCard.h".h"
+#include "SDCard.h"
 
 #include <stm32f1xx_ll_gpio.h>
 #include <stm32f1xx_ll_usart.h>
@@ -53,9 +53,11 @@ int main(void)
 	InitBoard();
 	MX_GPIO_Init();
 
-	HAL_Delay(1500);
+	HAL_Delay(500);
+	printf("============== Let the experiment begin ==============\n");
 
 	SDCard card;
+	card.powerUp();
 
 	while(true)
 	{

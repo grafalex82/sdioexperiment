@@ -9,6 +9,8 @@ SET(SOURCE_FILES
 	SPIDriver.h
 	SDCard.cpp
 	SDCard.h
+	SDIODriver.cpp
+	SDIODriver.h
 )
 
 INCLUDE_DIRECTORIES(
