@@ -71,6 +71,9 @@ void SDIODriver::init()
 	__SDIO_DISABLE(SDIO);
 	SDIO_PowerState_ON(SDIO);
 	__SDIO_ENABLE(SDIO);
+
+	while(SDIO_GetPowerState(SDIO) != 3)
+		;
 }
 
 void SDIODriver::cmd0_goIdleState()
