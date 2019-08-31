@@ -79,14 +79,41 @@ void SDIODriver::init()
 void SDIODriver::cmd0_goIdleState()
 {
 	uint32_t r = SDMMC_CmdGoIdleState(SDIO);
-	printf("CMD0 response: %08x\n", r);
+	printf("CMD0 error code: %08x\n", r);
 }
 
 bool SDIODriver::cmd8_sendInterfaceConditions()
 {
 	uint32_t r = SDMMC_CmdOperCond(SDIO);
-	printf("CMD8 response: %08x\n", r);
+	printf("CMD8 error code: %08x\n", r);
 
 	return r == SDMMC_ERROR_NONE;
 }
 
+void SDIODriver::cmd55_sendAppCommand()
+{
+	uint32_t r = SDMMC_CmdAppCommand(SDIO, 0);
+	printf("CMD55 error code: %08x\n", r);
+}
+
+bool SDIODriver::acmd41_sendAppOpConditions(bool hostSupportSdhc)
+{
+	// send our capability of handling SDHC cards
+	uint32_t r = SDMMC_CmdAppOperCommand(SDIO, hostSupportSdhc ? SDMMC_HIGH_CAPACITY : SDMMC_STD_CAPACITY);
+	printf("ACMD41 error code: %08x\n", r);
+
+	r = SDIO_GetResponse(SDIO, SDIO_RESP1);
+	printf("ACMD41 response: %08x\n", r);
+
+	return r >> 31; //31 bit is valid status (if low - card is still busy initializing)
+}
+
+bool SDIODriver::cmd58_readCCS()
+{
+	// Little hack: if executed right after acmd41_sendAppOpConditions()
+	// response register still contains Operations Conditions Register (OCR)
+	uint32_t r = SDIO_GetResponse(SDIO, SDIO_RESP1);
+
+	// Bit 30 contains Card Capacity Status (CCS) - true if the card is an SDHC or SDXC
+	return r & (1<<30);
+}

@@ -5,8 +5,10 @@
 
 #ifdef USE_SPI
 #include "SPIDriver.h"
+typedef SPIDriver SDDriver;
 #else //USE_SPI
 #include "SDIODriver.h"
+typedef SDIODriver SDDriver;
 #endif //USE_SPI
 
 class SDCard
@@ -17,11 +19,10 @@ public:
 	void powerUp();
 	bool init();
 
-#ifdef USE_SPI
-	SPIDriver driver;
-#else //USE_SPI
-	SDIODriver driver;
-#endif //USE_SPI
+private:
+	bool negotiateCapacity(bool hostSupportSdhc);
+
+	SDDriver driver;
 };
 
 #endif // SDCARD_H

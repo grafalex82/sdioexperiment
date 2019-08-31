@@ -32,7 +32,7 @@ void SDCard::powerUp()
 	LL_GPIO_ResetOutputPin(ENABLE_PIN_PORT, ENABLE_PIN_NUM);
 
 	// And wait at least 1ms
-	HAL_Delay(2);
+	HAL_Delay(1);
 
 	// initialize driver
 	driver.init();
@@ -40,15 +40,29 @@ void SDCard::powerUp()
 
 bool SDCard::init()
 {
-
 	printf("Sending soft reset command (GO IDLE)\n");
 	driver.cmd0_goIdleState();
 
 	printf("Card initialized. Checking card version\n");
-	if(driver.cmd8_sendInterfaceConditions())
-		printf("v2.0 card\n");
-	else
-		printf("v1.0 card\n");
+	bool v2card = driver.cmd8_sendInterfaceConditions();
+	printf("Card version - %d\n", v2card ? 2 : 1);
+
+	bool sdhc = negotiateCapacity(v2card);
+	printf("Card type - %s\n", sdhc ? "SDHC" : "SDSC");
 
 	return true;
+}
+
+bool SDCard::negotiateCapacity(bool hostSupportSdhc)
+{
+	bool valid;
+	do
+	{
+		driver.cmd55_sendAppCommand();
+		valid = driver.acmd41_sendAppOpConditions(hostSupportSdhc);
+	}
+	while(!valid);
+
+	bool sdhc = driver.cmd58_readCCS();
+	return sdhc;
 }

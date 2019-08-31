@@ -10,6 +10,9 @@ public:
 	void init();
 	void cmd0_goIdleState();
 	bool cmd8_sendInterfaceConditions();
+	void cmd55_sendAppCommand();
+	bool acmd41_sendAppOpConditions(bool hostSupportSdhc);
+	bool cmd58_readCCS();
 
 private:
 };
