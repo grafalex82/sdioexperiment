@@ -301,7 +301,7 @@ typedef struct
 #define SDMMC_R6_ILLEGAL_CMD               0x00004000U
 #define SDMMC_R6_COM_CRC_FAILED            0x00008000U
 
-#define SDMMC_VOLTAGE_WINDOW_SD            0x81100000U
+#define SDMMC_VOLTAGE_WINDOW_SD            0x80100000U
 #define SDMMC_HIGH_CAPACITY                0x40000000U
 #define SDMMC_STD_CAPACITY                 0x00000000U
 #define SDMMC_CHECK_PATTERN                0x000001AAU
