@@ -20,6 +20,10 @@ static const uint32_t			CS_PIN_NUM			= LL_GPIO_PIN_11;
 static const uint8_t R1_IDLE_STATE		= 0x01;
 static const uint8_t R1_ILLEGAL_COMMAND = 0x04;
 
+static GPIO_TypeDef * const		LED2_PORT		= GPIOB;
+static const uint32_t			LED2_PIN		= LL_GPIO_PIN_10;
+
+
 SPIDriver::SPIDriver()
 {
 }
@@ -89,18 +93,23 @@ inline void SPIDriver::transmitByte(uint8_t byte)
 
 	// Push new byte to output shifting register
 	LL_SPI_TransmitData8(SPI1, byte);
-
 }
 
 inline uint8_t SPIDriver::receiveByte()
 {
-	// Wait while byte is received (transmitting a dummy byte at the same time)
+	// Wait until previous byte is transmitted
+	while(!LL_SPI_IsActiveFlag_TXE(SPI1))
+		;
+
+	// Transmit a dummy byte and wait while byte is received (transmitting a dummy byte at the same time)
 	LL_SPI_TransmitData8(SPI1, 0xff);
 	while(!LL_SPI_IsActiveFlag_RXNE(SPI1))
 		;
 
-	// Push new byte to output shifting register
-	return LL_SPI_ReceiveData8(SPI1);
+	// Get new byte from input shifting register
+	uint8_t r = LL_SPI_ReceiveData8(SPI1);
+	//printf("%02x", r);
+	return r;
 }
 
 
@@ -143,6 +152,8 @@ uint8_t SPIDriver::CRC7(uint8_t * buf, size_t len)
 
 void SPIDriver::sendCommand(int cmd, int arg)
 {
+	//transmitByte(0xff);
+
 	uint8_t buf[6];
 	buf[0] = 0x40 | cmd; // 0x40 - direction bit is 1 - from host to card
 	buf[1] = (arg >> 24) & 0xff;
@@ -154,24 +165,34 @@ void SPIDriver::sendCommand(int cmd, int arg)
 	transmit(buf, sizeof(buf));
 }
 
-void SPIDriver::waitForR1()
+uint8_t SPIDriver::waitForR1()
 {
-	while(receiveByte() != R1_IDLE_STATE)
+	uint8_t r;
+	while((r = receiveByte()) == 0xff) //0xff - card has not yet responded
 		;
+
+	return r;
 }
 
-uint8_t SPIDriver::waitForNonFFByte()
+uint32_t SPIDriver::waitForR3R7()
 {
-	uint8_t ch;
-	while((ch = receiveByte()) == 0xff)
-		;
+	// Wait for R7 response (R1 + 4 bytes of data)
+	// if CMD8 is not supported - it will return R1 (1 byte) with ILLEGAL_COMMAND flag set
+	if(waitForR1() == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE))
+		return 0;
 
-	return ch;
+	// if we got valid response - get 4 bytes of payload
+	uint32_t r7 = receiveByte() << 24;
+	r7 |= receiveByte() << 16;
+	r7 |= receiveByte() << 8;
+	r7 |= receiveByte();
+
+	return r7;
 }
 
 void SPIDriver::cmd0_goIdleState()
 {
-	// To switch the card to SPI mode it is required to send at least 74 clock pulses while card is desetected
+	// To switch the card to SPI mode we need to send CMD0 with Card Select (CS) signal low
 	selectCard();
 
 	// Send CMD0 while card is selected (CS = 0)
@@ -183,21 +204,47 @@ void SPIDriver::cmd0_goIdleState()
 
 bool SPIDriver::cmd8_sendInterfaceConditions()
 {
-	sendCommand(SDMMC_CMD_HS_SEND_EXT_CSD, 0x1AA); //0x01 - request voltage3.3V, 0xAA - check pattern
+	//CMD8 argunemnts: 0x01 - request voltage3.3V, 0xAA - check pattern
+	sendCommand(SDMMC_CMD_HS_SEND_EXT_CSD, 0x1AA);
 
-	// Wait for R7 response (R1 + 4 bytes of data)
-	// If the card supports CMD8 it will return 5 bytes
-	// if not - it will return R1 with ILLEGAL_COMMAND flag set
-	if(waitForNonFFByte() == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE))
-		return false;
+	// If the card supports CMD8 it will return 5 bytes R7: 1 byte status + 4 bytes data
+	LL_GPIO_ResetOutputPin(LED2_PORT, LED2_PIN);
+	uint32_t r7 = waitForR3R7();
+	LL_GPIO_SetOutputPin(LED2_PORT, LED2_PIN);
+	printf("R7 = %08lx\n", r7);
 
-	uint32_t r7 = receiveByte() << 24;
-	r7 |= receiveByte() << 16;
-	r7 |= receiveByte() << 8;
-	r7 |= receiveByte();
+	// Assert r7 = 0x1aa - the card confirms 3.3V voltage and 0xAA check pattern
+	return r7 == 0x1aa;
+}
 
-	// TODO: Assert r7 = 0x1aa - the card confirms 3.3V voltage and 0xAA check pattern
-	 printf("R7 response: 0x%08x\n", (unsigned int)r7);
+void SPIDriver::cmd55_sendAppCommand()
+{
+	//printf("Sending CMD55\n");
+	sendCommand(SDMMC_CMD_APP_CMD, 0);
+	waitForR1();
+}
 
-	return true;
+bool SPIDriver::acmd41_sendAppOpConditions(bool hostSupportSdhc)
+{
+//	printf("Sending ACMD41\n");
+	uint32_t arg = SDMMC_VOLTAGE_WINDOW_SD;
+	arg |= hostSupportSdhc ? SDMMC_HIGH_CAPACITY : SDMMC_STD_CAPACITY;
+	sendCommand(SDMMC_CMD_SD_APP_OP_COND, arg);
+
+	uint8_t r = waitForR1();
+	return r == 0;
+}
+
+bool SPIDriver::cmd58_readCCS()
+{
+	printf("Sending CMD58\n");
+	// Send Read OCR command (CMD58)
+	sendCommand(58, 0);
+
+	// response is OCR register
+	uint32_t ocr = waitForR3R7();
+	printf("OCR = %08lx\n", ocr);
+
+	// Bit 30 contains Card Capacity Status (CCS) - true if the card is an SDHC or SDXC
+	return ocr & (1 << 30);
 }

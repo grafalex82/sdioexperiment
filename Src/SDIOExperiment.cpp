@@ -69,6 +69,6 @@ int main(void)
 		card.init();
 		printf("Card initialized successfully\n");
 
-		HAL_Delay(1500);
+		HAL_Delay(2000);
 	}
 }

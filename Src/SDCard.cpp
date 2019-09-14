@@ -55,6 +55,11 @@ bool SDCard::init()
 
 bool SDCard::negotiateCapacity(bool hostSupportSdhc)
 {
+	// Specification recommends but does not obligate sending CMD58 before ACMD41 in SPI mode
+	// In fact almost all cards require it
+	//driver.cmd58_readCCS();
+
+	// Send ACMD41 until we card is initialized
 	bool valid;
 	do
 	{
@@ -63,6 +68,7 @@ bool SDCard::negotiateCapacity(bool hostSupportSdhc)
 	}
 	while(!valid);
 
+	// We are interested in Card Capacity Status bit to distinquish SDSC and SDHC/SDXC cards
 	bool sdhc = driver.cmd58_readCCS();
 	return sdhc;
 }

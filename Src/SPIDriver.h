@@ -12,6 +12,9 @@ public:
 	void init();
 	void cmd0_goIdleState();
 	bool cmd8_sendInterfaceConditions();
+	void cmd55_sendAppCommand();
+	bool acmd41_sendAppOpConditions(bool hostSupportSdhc);
+	bool cmd58_readCCS();
 
 	void transmit(const uint8_t * buf, size_t len);
 	void receive(uint8_t * buf, size_t len);
@@ -20,8 +23,8 @@ private:
 	static uint8_t CRC7(uint8_t * buf, size_t len);
 	void transmitByte(uint8_t byte);
 	uint8_t receiveByte();
-	uint8_t waitForNonFFByte();
-	void waitForR1();
+	uint8_t waitForR1();
+	uint32_t waitForR3R7();
 	void sendCommand(int cmd, int arg);
 	void selectCard();
 	void deselectCard();
