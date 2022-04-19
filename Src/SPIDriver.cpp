@@ -182,8 +182,12 @@ uint32_t SPIDriver::waitForR3R7()
 {
 	// Wait for R7 response (R1 + 4 bytes of data)
 	// if CMD8 is not supported - it will return R1 (1 byte) with ILLEGAL_COMMAND flag set
-	if(waitForR1() == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE))
+	uint8_t r1 = waitForR1();
+	if(r1 == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE))
+	{
+		printf("R1 = %02x (Illegal command, possibly a SDSC card)... ", r1);
 		return 0;
+	}
 
 	// if we got valid response - get 4 bytes of payload
 	uint32_t r7 = receiveByte() << 24;
@@ -208,6 +212,8 @@ void SPIDriver::cmd0_goIdleState()
 
 bool SPIDriver::cmd8_sendInterfaceConditions()
 {
+	printf("Sending CMD8 (get interface conditions)... ");
+
 	//CMD8 argunemnts: 0x01 - request voltage3.3V, 0xAA - check pattern
 	sendCommand(SDMMC_CMD_HS_SEND_EXT_CSD, 0x1AA);
 
