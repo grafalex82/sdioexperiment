@@ -64,13 +64,20 @@ void loopbackCMD(const char * argument)
         printf("%s\n", argument);
 }
 
-void initSpiDriver(const char * argument)
+void spiInit(const char * argument)
 {
     // Expect argument that is fPCLK prescaler
     int prescaler = atoi(argument);
     spi.init(prescaler);
     printf("OK\n");
 }
+
+void spiReset()
+{
+    spi.reset();
+    printf("OK\n");
+}
+
 
 void parseCommand(const char * buf)
 {
@@ -92,7 +99,10 @@ void parseCommand(const char * buf)
         loopbackCMD(ptr);
     else
     if(!strncmp("SPI_INIT", buf, cmdLen))
-        initSpiDriver(ptr);
+        spiInit(ptr);
+    else
+    if(!strncmp("SPI_RESET", buf, cmdLen))
+        spiReset();
     else
         printf("ERROR Unknown command: %s\n", buf);
 }
