@@ -9,7 +9,8 @@ class SPIDriver
 public:
 	SPIDriver();
 
-	void init();
+    void init(unsigned int prescaler);
+    void reset();
 	void cmd0_goIdleState();
 	bool cmd8_sendInterfaceConditions();
 	void cmd55_sendAppCommand();

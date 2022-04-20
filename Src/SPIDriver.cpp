@@ -28,7 +28,7 @@ SPIDriver::SPIDriver()
 {
 }
 
-void SPIDriver::init()
+void SPIDriver::init(unsigned int prescaler)
 {
     // Enable clocking of corresponding periperhal
     LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA | LL_APB2_GRP1_PERIPH_GPIOC);
@@ -55,11 +55,16 @@ void SPIDriver::init()
     // Disable SPI before reconfiguration
     LL_SPI_Disable(SPI1);
 
-    // Configure SPI
-    uint32_t div = LL_SPI_BAUDRATEPRESCALER_DIV16;
-    unsigned int prescaler = 2 << (div >> SPI_CR1_BR_Pos);
+    // Calculate prescaler value
+    if(prescaler < 2)
+        prescaler = 2;
     unsigned int freq = 72000/prescaler;
-    printf("Configuring SPI with prescaler %d (freq=%dkHz)\n", prescaler, freq);
+    uint32_t div = LL_SPI_BAUDRATEPRESCALER_DIV2;
+    for(unsigned int p = prescaler/4; p != 0; p /= 2)
+        div++;
+
+    // Configure SPI
+    printf("Configuring SPI with prescaler %d (div=%d, freq=%dkHz)\n", prescaler, div, freq);
     LL_SPI_SetMode(SPI1, LL_SPI_MODE_MASTER);
     LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
     LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
@@ -72,11 +77,14 @@ void SPIDriver::init()
 
     // Now enable it
     LL_SPI_Enable(SPI1);
+}
 
-    // Card power mgmt requires sending at least 74 clock pulses before the first command. We will send 80 pulses
+void SPIDriver::reset()
+{
+    // Card power mgmt requires sending at least 74 clock pulses before the first command while CS is up. We will send 80 pulses
+    deselectCard();
     for(int i=0; i<10; i++)
         transmitByte(0xff);
-
 }
 
 inline void SPIDriver::selectCard()

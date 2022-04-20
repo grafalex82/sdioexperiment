@@ -8,8 +8,14 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "UartUtils.h"
+#include "SPIDriver.h"
+#include "SDIODriver.h"
+
+SPIDriver spi;
+SDIODriver sdio;
 
 // Pin constants
 static GPIO_TypeDef * const		LED1_PORT		= GPIOB;
@@ -58,6 +64,14 @@ void loopbackCMD(const char * argument)
         printf("%s\n", argument);
 }
 
+void initSpiDriver(const char * argument)
+{
+    // Expect argument that is fPCLK prescaler
+    int prescaler = atoi(argument);
+    spi.init(prescaler);
+    printf("OK\n");
+}
+
 void parseCommand(const char * buf)
 {
     printf("CMD: %s\n", buf);
@@ -76,6 +90,9 @@ void parseCommand(const char * buf)
     // Dispatch the command
     if(!strncmp("LOOPBACK", buf, cmdLen))
         loopbackCMD(ptr);
+    else
+    if(!strncmp("SPI_INIT", buf, cmdLen))
+        initSpiDriver(ptr);
     else
         printf("ERROR Unknown command: %s\n", buf);
 }
@@ -96,18 +113,18 @@ int main(void)
         parseCommand(buf);
     }
 
-    SDCard card;
+//    SDCard card;
 
-    while(true)
-    {
-        LL_GPIO_ResetOutputPin(LED1_PORT, LED1_PIN);
-        HAL_Delay(500);
-        LL_GPIO_SetOutputPin(LED1_PORT, LED1_PIN);
+//    while(true)
+//    {
+//        LL_GPIO_ResetOutputPin(LED1_PORT, LED1_PIN);
+//        HAL_Delay(500);
+//        LL_GPIO_SetOutputPin(LED1_PORT, LED1_PIN);
 
-        printf("Initialize card\n");
-        card.init();
-        printf("Card initialized successfully\n");
+//        printf("Initialize card\n");
+//        card.init();
+//        printf("Card initialized successfully\n");
 
-        HAL_Delay(2000);
-    }
+//        HAL_Delay(2000);
+//    }
 }
