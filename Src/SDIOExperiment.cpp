@@ -78,6 +78,19 @@ void spiReset()
     printf("OK\n");
 }
 
+void spiCmd0_goIdleState()
+{
+    spi.cmd0_goIdleState();
+    printf("OK\n");
+}
+
+void spiCmd8_sendInterfaceConditions()
+{
+    bool v2card = spi.cmd8_sendInterfaceConditions();
+    printf("Card version - %d\n", v2card ? 2 : 1);
+    printf("OK %d\n", v2card ? 2 : 1);
+}
+
 
 void parseCommand(const char * buf)
 {
@@ -103,6 +116,12 @@ void parseCommand(const char * buf)
     else
     if(!strncmp("SPI_RESET", buf, cmdLen))
         spiReset();
+    else
+    if(!strncmp("SPI_CMD0", buf, cmdLen))
+        spiCmd0_goIdleState();
+    else
+    if(!strncmp("SPI_CMD8", buf, cmdLen))
+        spiCmd8_sendInterfaceConditions();
     else
         printf("ERROR Unknown command: %s\n", buf);
 }
