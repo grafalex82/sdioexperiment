@@ -1,7 +1,7 @@
 #ifndef SDCARD_H
 #define SDCARD_H
 
-//#define USE_SPI
+#define USE_SPI
 
 #ifdef USE_SPI
 #include "SPIDriver.h"

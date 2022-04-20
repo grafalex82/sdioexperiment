@@ -8,6 +8,8 @@
 
 #include <stdio.h>
 
+#include "UartUtils.h"
+
 // Pin constants
 static GPIO_TypeDef * const		LED1_PORT		= GPIOB;
 static const uint32_t			LED1_PIN		= LL_GPIO_PIN_11;
@@ -48,6 +50,7 @@ static void MX_GPIO_Init(void)
 }
 
 
+
 int main(void)
 {
 	InitBoard();
@@ -55,6 +58,14 @@ int main(void)
 
 	HAL_Delay(500);
 	printf("============== Let the experiment begin ==============\n");
+
+    char buf[50];
+
+    while(true)
+    {
+        readLine(buf, 50);
+        printf("Received line: %s\n", buf);
+    }
 
 	SDCard card;
 	card.powerUp();

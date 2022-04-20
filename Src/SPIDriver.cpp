@@ -56,7 +56,7 @@ void SPIDriver::init()
 	LL_SPI_Disable(SPI1);
 
 	// Configure SPI
-	uint32_t div = LL_SPI_BAUDRATEPRESCALER_DIV8;
+    uint32_t div = LL_SPI_BAUDRATEPRESCALER_DIV16;
 	unsigned int prescaler = 2 << (div >> SPI_CR1_BR_Pos);
 	unsigned int freq = 72000/prescaler;
 	printf("Configuring SPI with prescaler %d (freq=%dkHz)\n", prescaler, freq);

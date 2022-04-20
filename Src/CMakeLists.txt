@@ -11,6 +11,8 @@ SET(SOURCE_FILES
 	SDCard.h
 	SDIODriver.cpp
 	SDIODriver.h
+        UartUtils.cpp
+        UartUtils.h
 )
 
 INCLUDE_DIRECTORIES(
