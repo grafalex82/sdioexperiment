@@ -84,6 +84,7 @@ int main(void)
 {
     initBoard();
     initLEDs();
+    cardPowerUp();
 
     HAL_Delay(500);
     printf("============== Let the experiment begin ==============\n");
@@ -96,7 +97,6 @@ int main(void)
     }
 
     SDCard card;
-    card.powerUp();
 
     while(true)
     {

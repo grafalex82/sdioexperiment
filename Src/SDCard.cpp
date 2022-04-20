@@ -11,12 +11,7 @@ static GPIO_TypeDef * const		ENABLE_PIN_PORT		= GPIOA;
 static const uint32_t			ENABLE_PIN_NUM		= LL_GPIO_PIN_15;
 
 
-SDCard::SDCard()
-{
-
-}
-
-void SDCard::powerUp()
+void cardPowerUp()
 {
     // Card power enable pin lives on PA15 which has to be unattached from JTAG first
     LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_AFIO);
@@ -33,13 +28,19 @@ void SDCard::powerUp()
 
     // And wait at least 1ms
     HAL_Delay(1);
-
-    // initialize driver
-    driver.init();
 }
+
+SDCard::SDCard()
+{
+
+}
+
 
 bool SDCard::init()
 {
+    // initialize driver
+    driver.init();
+
     printf("Sending soft reset command (GO IDLE)\n");
     driver.cmd0_goIdleState();
 

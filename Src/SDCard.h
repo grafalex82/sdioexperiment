@@ -11,12 +11,14 @@ typedef SPIDriver SDDriver;
 typedef SDIODriver SDDriver;
 #endif //USE_SPI
 
+
+void cardPowerUp();
+
 class SDCard
 {
 public:
 	SDCard();
 
-	void powerUp();
 	bool init();
 
 private:
