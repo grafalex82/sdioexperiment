@@ -18,57 +18,57 @@ SDCard::SDCard()
 
 void SDCard::powerUp()
 {
-	// Card power enable pin lives on PA15 which has to be unattached from JTAG first
-	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_AFIO);
-	LL_GPIO_AF_Remap_SWJ_NOJTAG();
+    // Card power enable pin lives on PA15 which has to be unattached from JTAG first
+    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_AFIO);
+    LL_GPIO_AF_Remap_SWJ_NOJTAG();
 
-	// Enable SD card power by signalling low PA15
-	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
+    // Enable SD card power by signalling low PA15
+    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
 
-	LL_GPIO_SetPinMode(ENABLE_PIN_PORT, ENABLE_PIN_NUM, LL_GPIO_MODE_OUTPUT);
-	LL_GPIO_SetPinOutputType(ENABLE_PIN_PORT, ENABLE_PIN_NUM, LL_GPIO_OUTPUT_PUSHPULL);
-	LL_GPIO_SetPinSpeed(ENABLE_PIN_PORT, ENABLE_PIN_NUM, LL_GPIO_SPEED_FREQ_LOW);
-	LL_GPIO_SetOutputPin(ENABLE_PIN_PORT, ENABLE_PIN_NUM);
-	LL_GPIO_ResetOutputPin(ENABLE_PIN_PORT, ENABLE_PIN_NUM);
+    LL_GPIO_SetPinMode(ENABLE_PIN_PORT, ENABLE_PIN_NUM, LL_GPIO_MODE_OUTPUT);
+    LL_GPIO_SetPinOutputType(ENABLE_PIN_PORT, ENABLE_PIN_NUM, LL_GPIO_OUTPUT_PUSHPULL);
+    LL_GPIO_SetPinSpeed(ENABLE_PIN_PORT, ENABLE_PIN_NUM, LL_GPIO_SPEED_FREQ_LOW);
+    LL_GPIO_SetOutputPin(ENABLE_PIN_PORT, ENABLE_PIN_NUM);
+    LL_GPIO_ResetOutputPin(ENABLE_PIN_PORT, ENABLE_PIN_NUM);
 
-	// And wait at least 1ms
-	HAL_Delay(1);
+    // And wait at least 1ms
+    HAL_Delay(1);
 
-	// initialize driver
-	driver.init();
+    // initialize driver
+    driver.init();
 }
 
 bool SDCard::init()
 {
-	printf("Sending soft reset command (GO IDLE)\n");
-	driver.cmd0_goIdleState();
+    printf("Sending soft reset command (GO IDLE)\n");
+    driver.cmd0_goIdleState();
 
-	printf("Card initialized. Checking card version\n");
-	bool v2card = driver.cmd8_sendInterfaceConditions();
-	printf("Card version - %d\n", v2card ? 2 : 1);
+    printf("Card initialized. Checking card version\n");
+    bool v2card = driver.cmd8_sendInterfaceConditions();
+    printf("Card version - %d\n", v2card ? 2 : 1);
 
-	bool sdhc = negotiateCapacity(v2card);
-	printf("Card type - %s\n", sdhc ? "SDHC" : "SDSC");
+    bool sdhc = negotiateCapacity(v2card);
+    printf("Card type - %s\n", sdhc ? "SDHC" : "SDSC");
 
-	return true;
+    return true;
 }
 
 bool SDCard::negotiateCapacity(bool hostSupportSdhc)
 {
-	// Specification recommends but does not obligate sending CMD58 before ACMD41 in SPI mode
-	// In fact almost all cards require it
-	//driver.cmd58_readCCS();
+    // Specification recommends but does not obligate sending CMD58 before ACMD41 in SPI mode
+    // In fact almost all cards require it
+    //driver.cmd58_readCCS();
 
-	// Send ACMD41 until we card is initialized
-	bool valid;
-	do
-	{
-		driver.cmd55_sendAppCommand();
-		valid = driver.acmd41_sendAppOpConditions(hostSupportSdhc);
-	}
-	while(!valid);
+    // Send ACMD41 until we card is initialized
+    bool valid;
+    do
+    {
+        driver.cmd55_sendAppCommand();
+        valid = driver.acmd41_sendAppOpConditions(hostSupportSdhc);
+    }
+    while(!valid);
 
-	// We are interested in Card Capacity Status bit to distinquish SDSC and SDHC/SDXC cards
-	bool sdhc = driver.cmd58_readCCS();
-	return sdhc;
+    // We are interested in Card Capacity Status bit to distinquish SDSC and SDHC/SDXC cards
+    bool sdhc = driver.cmd58_readCCS();
+    return sdhc;
 }
