@@ -7,6 +7,7 @@
 #include <stm32f1xx_hal.h>
 
 #include <stdio.h>
+#include <string.h>
 
 #include "UartUtils.h"
 
@@ -49,6 +50,33 @@ static void initLEDs(void)
     LL_GPIO_SetOutputPin(LED4_PORT, LED4_PIN);
 }
 
+void loopbackCMD(const char * argument)
+{
+    printf("%s\n", argument);
+}
+
+void parseCommand(const char * buf)
+{
+    printf("CMD: %s\n", buf);
+
+    // Tokenize command
+    const char * ptr = buf;
+    while(*ptr != ' ' && *ptr != '\0')
+        ptr++;
+
+    size_t cmdLen = ptr - buf;
+
+    // Search for argument start
+    while(*ptr == ' ' && *ptr != '\0')
+        ptr++;
+
+    // Dispatch the command
+    if(!strncmp("LOOPBACK", buf, cmdLen))
+        loopbackCMD(ptr);
+    else
+        printf("ERROR Unknown command: %s\n", buf);
+}
+
 int main(void)
 {
     initBoard();
@@ -57,12 +85,11 @@ int main(void)
     HAL_Delay(500);
     printf("============== Let the experiment begin ==============\n");
 
-    char buf[50];
-
     while(true)
     {
-        readLine(buf, 50);
-        printf("Received line: %s\n", buf);
+        char buf[80];
+        readLine(buf, 80);
+        parseCommand(buf);
     }
 
     SDCard card;
