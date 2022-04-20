@@ -21,7 +21,7 @@ static GPIO_TypeDef * const		LED4_PORT		= GPIOA;
 static const uint32_t			LED4_PIN		= LL_GPIO_PIN_4;
 
 
-static void MX_GPIO_Init(void)
+static void initLEDs(void)
 {
     // Enable clocking of corresponding periperhal
     LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
@@ -51,8 +51,8 @@ static void MX_GPIO_Init(void)
 
 int main(void)
 {
-    InitBoard();
-    MX_GPIO_Init();
+    initBoard();
+    initLEDs();
 
     HAL_Delay(500);
     printf("============== Let the experiment begin ==============\n");

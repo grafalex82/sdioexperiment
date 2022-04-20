@@ -45,7 +45,7 @@ void initClock(void)
     HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
 }
 
-void InitBoard()
+void initBoard()
 {
     // Initialize board and HAL
     HAL_Init();
@@ -57,6 +57,7 @@ extern "C"
 void SysTick_Handler(void) {
     HAL_IncTick();
     HAL_SYSTICK_IRQHandler();
+}
 
 extern "C"
 void Error_Handler()

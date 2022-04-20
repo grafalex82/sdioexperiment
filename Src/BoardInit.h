@@ -1,6 +1,6 @@
 #ifndef BOARDINIT_H
 #define BOARDINIT_H
 
-void InitBoard();
+void initBoard();
 
 #endif // BOARDINIT_H
