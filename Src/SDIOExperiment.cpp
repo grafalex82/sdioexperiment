@@ -52,7 +52,10 @@ static void initLEDs(void)
 
 void loopbackCMD(const char * argument)
 {
-    printf("%s\n", argument);
+    if(*argument == '\0')
+        printf("OK\n");
+    else
+        printf("%s\n", argument);
 }
 
 void parseCommand(const char * buf)
