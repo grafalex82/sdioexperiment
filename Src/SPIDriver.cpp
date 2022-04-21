@@ -244,7 +244,6 @@ void SPIDriver::cmd55_sendAppCommand()
 
 bool SPIDriver::acmd41_sendAppOpConditions(bool hostSupportSdhc)
 {
-    //	printf("Sending ACMD41\n");
     uint32_t arg = SDMMC_VOLTAGE_WINDOW_SD;
     arg |= hostSupportSdhc ? SDMMC_HIGH_CAPACITY : SDMMC_STD_CAPACITY;
     sendCommand(SDMMC_CMD_SD_APP_OP_COND, arg);
@@ -255,7 +254,6 @@ bool SPIDriver::acmd41_sendAppOpConditions(bool hostSupportSdhc)
 
 bool SPIDriver::cmd58_readCCS()
 {
-    printf("Sending CMD58\n");
     // Send Read OCR command (CMD58)
     sendCommand(58, 0);
 

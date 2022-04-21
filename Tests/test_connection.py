@@ -55,6 +55,18 @@ def test_spi_init(board):
     v2card = sendCommand(board, "CMD8")
     assert(v2card)
 
+    status = "Busy"
+    retries = 0
+    while status == "Busy":
+        sendCommand(board, "CMD55")
+        status = sendCommand(board, "ACMD41 " + v2card)
+        retries += 1
+        assert(retries < 10)
+    assert(status == "Valid")
+
+    sdhc = sendCommand(board, "CMD58")
+    assert(sdhc == "SDHC")
+
 
 def test_sdio_init(board):
     sendCommand(board, "SDIO_INIT 256")
@@ -62,3 +74,15 @@ def test_sdio_init(board):
     sendCommand(board, "CMD0")
     v2card = sendCommand(board, "CMD8")
     assert(v2card)
+
+    status = "Busy"
+    retries = 0
+    while status == "Busy":
+        sendCommand(board, "CMD55")
+        status = sendCommand(board, "ACMD41 " + v2card)
+        retries += 1
+        assert(retries < 10)
+    assert(status == "Valid")
+
+    sdhc = sendCommand(board, "CMD58")
+    assert(sdhc == "SDHC")

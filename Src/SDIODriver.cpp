@@ -118,6 +118,7 @@ bool SDIODriver::cmd58_readCCS()
     // Little hack: if executed right after acmd41_sendAppOpConditions()
     // response register still contains Operations Conditions Register (OCR)
     uint32_t ocr = SDIO_GetResponse(SDIO, SDIO_RESP1);
+    printf("OCR = %08lx\n", ocr);
 
     // Bit 30 contains Card Capacity Status (CCS) - true if the card is an SDHC or SDXC
     return ocr & (1<<30);

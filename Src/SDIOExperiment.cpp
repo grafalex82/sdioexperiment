@@ -104,6 +104,26 @@ void cmd8_sendInterfaceConditions()
     printf("OK %d\n", v2card ? 2 : 1);
 }
 
+void cmd55_sendAppCommand()
+{
+    driver->cmd55_sendAppCommand();
+    printf("OK\n");
+}
+
+void acmd41_sendAppOpConditions(const char * argument)
+{
+    // Expect argument that is SDHC support from the host side
+    int sdhc = atoi(argument);
+
+    bool valid = driver->acmd41_sendAppOpConditions(sdhc);
+    printf("OK %s\n", valid ? "Valid" : "Busy");
+}
+
+void cmd58_readCCS()
+{
+    bool ccs = driver->cmd58_readCCS();
+    printf("OK %s\n", ccs ? "SDHC" : "SDSC");
+}
 
 void parseCommand(const char * buf)
 {
@@ -138,6 +158,15 @@ void parseCommand(const char * buf)
     else
     if(!strncmp("CMD8", buf, cmdLen))
         cmd8_sendInterfaceConditions();
+    else
+    if(!strncmp("CMD55", buf, cmdLen))
+        cmd55_sendAppCommand();
+    else
+    if(!strncmp("ACMD41", buf, cmdLen))
+        acmd41_sendAppOpConditions(ptr);
+    else
+    if(!strncmp("CMD58", buf, cmdLen))
+        cmd58_readCCS();
     else
         printf("ERROR Unknown command: %s\n", buf);
 }
