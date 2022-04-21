@@ -52,11 +52,13 @@ def test_spi_init(board):
     sendCommand(board, "SPI_INIT 256")
     sendCommand(board, "RESET")
     sendCommand(board, "CMD0")
-    sendCommand(board, "CMD8")
+    v2card = sendCommand(board, "CMD8")
+    assert(v2card)
 
 
 def test_sdio_init(board):
     sendCommand(board, "SDIO_INIT 256")
     sendCommand(board, "RESET")
     sendCommand(board, "CMD0")
-    sendCommand(board, "CMD8")
+    v2card = sendCommand(board, "CMD8")
+    assert(v2card)
