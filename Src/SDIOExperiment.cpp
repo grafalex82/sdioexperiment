@@ -85,26 +85,26 @@ void cmdSdioInit(const char * argument)
     printf("OK\n");
 }
 
-void cmdReset()
+void cmdReset(const char *)
 {
     driver->reset();
     printf("OK\n");
 }
 
-void cmd0_goIdleState()
+void cmd0_goIdleState(const char *)
 {
     driver->cmd0_goIdleState();
     printf("OK\n");
 }
 
-void cmd8_sendInterfaceConditions()
+void cmd8_sendInterfaceConditions(const char *)
 {
     bool v2card = driver->cmd8_sendInterfaceConditions();
     printf("Card version - %d\n", v2card ? 2 : 1);
     printf("OK %d\n", v2card ? 2 : 1);
 }
 
-void cmd55_sendAppCommand()
+void cmd55_sendAppCommand(const char *)
 {
     driver->cmd55_sendAppCommand();
     printf("OK\n");
@@ -119,11 +119,29 @@ void acmd41_sendAppOpConditions(const char * argument)
     printf("OK %s\n", valid ? "Valid" : "Busy");
 }
 
-void cmd58_readCCS()
+void cmd58_readCCS(const char *)
 {
     bool ccs = driver->cmd58_readCCS();
     printf("OK %s\n", ccs ? "SDHC" : "SDSC");
 }
+
+struct CommandEntry
+{
+    const char * command;
+    void (*handler)(const char * argument);
+};
+
+CommandEntry commandHandlers[] = {
+    {"LOOPBACK",    cmdLoopback},
+    {"SPI_INIT",    cmdSpiInit},
+    {"SDIO_INIT",   cmdSdioInit},
+    {"RESET",       cmdReset},
+    {"CMD0",        cmd0_goIdleState},
+    {"CMD8",        cmd8_sendInterfaceConditions},
+    {"CMD55",       cmd55_sendAppCommand},
+    {"ACMD41",      acmd41_sendAppOpConditions},
+    {"CMD58",       cmd58_readCCS}
+};
 
 void parseCommand(const char * buf)
 {
@@ -141,33 +159,17 @@ void parseCommand(const char * buf)
         ptr++;
 
     // Dispatch the command
-    if(!strncmp("LOOPBACK", buf, cmdLen))
-        cmdLoopback(ptr);
-    else
-    if(!strncmp("SPI_INIT", buf, cmdLen))
-        cmdSpiInit(ptr);
-    else
-    if(!strncmp("SDIO_INIT", buf, cmdLen))
-        cmdSdioInit(ptr);
-    else
-    if(!strncmp("RESET", buf, cmdLen))
-        cmdReset();
-    else
-    if(!strncmp("CMD0", buf, cmdLen))
-        cmd0_goIdleState();
-    else
-    if(!strncmp("CMD8", buf, cmdLen))
-        cmd8_sendInterfaceConditions();
-    else
-    if(!strncmp("CMD55", buf, cmdLen))
-        cmd55_sendAppCommand();
-    else
-    if(!strncmp("ACMD41", buf, cmdLen))
-        acmd41_sendAppOpConditions(ptr);
-    else
-    if(!strncmp("CMD58", buf, cmdLen))
-        cmd58_readCCS();
-    else
+    bool handled = false;
+    for(size_t i=0; i<sizeof(commandHandlers)/sizeof(CommandEntry); i++)
+    {
+        if(!strncmp(commandHandlers[i].command, buf, cmdLen))
+        {
+            commandHandlers[i].handler(ptr);
+            handled = true;
+        }
+    }
+
+    if(!handled)
         printf("ERROR Unknown command: %s\n", buf);
 }
 
