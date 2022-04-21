@@ -13,6 +13,7 @@ SET(SOURCE_FILES
 	SDIODriver.h
         UartUtils.cpp
         UartUtils.h
+        IDriver.h
 )
 
 INCLUDE_DIRECTORIES(

@@ -16,6 +16,7 @@
 
 SPIDriver spi;
 SDIODriver sdio;
+IDriver * driver = &spi;
 
 // Pin constants
 static GPIO_TypeDef * const		LED1_PORT		= GPIOB;
@@ -56,7 +57,7 @@ static void initLEDs(void)
     LL_GPIO_SetOutputPin(LED4_PORT, LED4_PIN);
 }
 
-void loopbackCMD(const char * argument)
+void cmdLoopback(const char * argument)
 {
     if(*argument == '\0')
         printf("OK\n");
@@ -64,29 +65,41 @@ void loopbackCMD(const char * argument)
         printf("%s\n", argument);
 }
 
-void spiInit(const char * argument)
+void cmdSpiInit(const char * argument)
 {
     // Expect argument that is fPCLK prescaler
     int prescaler = atoi(argument);
-    spi.init(prescaler);
+
+    driver = &spi;
+    driver->init(prescaler);
     printf("OK\n");
 }
 
-void spiReset()
+void cmdSdioInit(const char * argument)
 {
-    spi.reset();
+    // Expect argument that is fPCLK prescaler
+    int prescaler = atoi(argument);
+
+    driver = &sdio;
+    driver->init(prescaler);
     printf("OK\n");
 }
 
-void spiCmd0_goIdleState()
+void cmdReset()
 {
-    spi.cmd0_goIdleState();
+    driver->reset();
     printf("OK\n");
 }
 
-void spiCmd8_sendInterfaceConditions()
+void cmd0_goIdleState()
 {
-    bool v2card = spi.cmd8_sendInterfaceConditions();
+    driver->cmd0_goIdleState();
+    printf("OK\n");
+}
+
+void cmd8_sendInterfaceConditions()
+{
+    bool v2card = driver->cmd8_sendInterfaceConditions();
     printf("Card version - %d\n", v2card ? 2 : 1);
     printf("OK %d\n", v2card ? 2 : 1);
 }
@@ -109,19 +122,22 @@ void parseCommand(const char * buf)
 
     // Dispatch the command
     if(!strncmp("LOOPBACK", buf, cmdLen))
-        loopbackCMD(ptr);
+        cmdLoopback(ptr);
     else
     if(!strncmp("SPI_INIT", buf, cmdLen))
-        spiInit(ptr);
+        cmdSpiInit(ptr);
     else
-    if(!strncmp("SPI_RESET", buf, cmdLen))
-        spiReset();
+    if(!strncmp("SDIO_INIT", buf, cmdLen))
+        cmdSdioInit(ptr);
     else
-    if(!strncmp("SPI_CMD0", buf, cmdLen))
-        spiCmd0_goIdleState();
+    if(!strncmp("RESET", buf, cmdLen))
+        cmdReset();
     else
-    if(!strncmp("SPI_CMD8", buf, cmdLen))
-        spiCmd8_sendInterfaceConditions();
+    if(!strncmp("CMD0", buf, cmdLen))
+        cmd0_goIdleState();
+    else
+    if(!strncmp("CMD8", buf, cmdLen))
+        cmd8_sendInterfaceConditions();
     else
         printf("ERROR Unknown command: %s\n", buf);
 }

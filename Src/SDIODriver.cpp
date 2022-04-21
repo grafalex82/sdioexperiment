@@ -23,7 +23,7 @@ SDIODriver::SDIODriver()
 {
 }
 
-void SDIODriver::init()
+void SDIODriver::init(unsigned int prescaler)
 {
     // Enable clocking of corresponding periperhal
     LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOC);
@@ -74,6 +74,11 @@ void SDIODriver::init()
 
     while(SDIO_GetPowerState(SDIO) != 3)
         ;
+}
+
+void SDIODriver::reset()
+{
+
 }
 
 void SDIODriver::cmd0_goIdleState()

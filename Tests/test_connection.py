@@ -40,9 +40,23 @@ def test_loopback_error(board):
     with pytest.raises(RuntimeError):
         sendCommand(board, "LOOPBACK ERROR")
 
+
 def test_loopback_error_msg(board):
     with pytest.raises(RuntimeError) as err:
         sendCommand(board, "LOOPBACK ERROR error message")
 
     assert(str(err.value) == "error message")
 
+
+def test_spi_init(board):
+    sendCommand(board, "SPI_INIT 256")
+    sendCommand(board, "RESET")
+    sendCommand(board, "CMD0")
+    sendCommand(board, "CMD8")
+
+
+def test_sdio_init(board):
+    sendCommand(board, "SDIO_INIT 256")
+    sendCommand(board, "RESET")
+    sendCommand(board, "CMD0")
+    sendCommand(board, "CMD8")

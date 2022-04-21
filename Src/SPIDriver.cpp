@@ -64,7 +64,7 @@ void SPIDriver::init(unsigned int prescaler)
         div++;
 
     // Configure SPI
-    printf("Configuring SPI with prescaler %d (div=%d, freq=%dkHz)\n", prescaler, div, freq);
+    printf("Configuring SPI with prescaler %d (div=%ld, freq=%dkHz)\n", prescaler, div, freq);
     LL_SPI_SetMode(SPI1, LL_SPI_MODE_MASTER);
     LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
     LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
