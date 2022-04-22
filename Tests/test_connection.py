@@ -29,7 +29,6 @@ class SD:
                 raise RuntimeError(argument)
 
             response += line + "\n"
-#            print("Response: " + response)
 
 
     def init(self, mode, prescaler):
@@ -51,6 +50,9 @@ class SD:
         status, _ = self.sendCommand("ACMD41 "+str(hostSupportsSDHC))
         return status
 
+    def cmd58(self):
+        sdhc, _ = self.sendCommand("CMD58")
+        return sdhc
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -85,6 +87,8 @@ def test_sdio_init(sd):
     v2card = sd.cmd8()
     assert(v2card)
 
+    sd.cmd58()
+
     status = "Busy"
     retries = 0
     while status == "Busy":
@@ -93,7 +97,7 @@ def test_sdio_init(sd):
         assert(retries < 10)
     assert(status == "Valid")
 
-    sdhc, _ = sd.sendCommand("CMD58")
+    sdhc = sd.cmd58()
     assert(sdhc == "SDHC")
 
 
@@ -104,7 +108,7 @@ def test_spi_init(sd):
     v2card = sd.cmd8()
     assert(v2card)
 
-    sd.sendCommand("CMD58")
+    sd.cmd58()
 
     status = "Busy"
     retries = 0
@@ -114,7 +118,7 @@ def test_spi_init(sd):
         assert(retries < 10)
     assert(status == "Valid")
 
-    sdhc, _ = sd.sendCommand("CMD58")
+    sdhc = sd.cmd58()
     assert(sdhc == "SDHC")
 
 
