@@ -76,6 +76,25 @@ void SDIODriver::init(unsigned int prescaler)
         ;
 }
 
+void SDIODriver::deinit()
+{
+    // Disable SDIO power
+    SDIO_PowerState_OFF(SDIO);
+    __SDIO_DISABLE(SDIO);
+
+    // Disable SDIO clocks now
+    LL_AHB1_GRP1_DisableClock(LL_AHB1_GRP1_PERIPH_SDIO);
+
+    // Deinitialize SDIO pins:
+    LL_GPIO_SetPinMode(SDIO_D0_PIN_PORT, SDIO_D0_PIN_NUM, LL_GPIO_MODE_FLOATING);
+    LL_GPIO_SetPinMode(SDIO_D1_PIN_PORT, SDIO_D1_PIN_NUM, LL_GPIO_MODE_FLOATING);
+    LL_GPIO_SetPinMode(SDIO_D2_PIN_PORT, SDIO_D2_PIN_NUM, LL_GPIO_MODE_FLOATING);
+    LL_GPIO_SetPinMode(SDIO_D3_PIN_PORT, SDIO_D3_PIN_NUM, LL_GPIO_MODE_FLOATING);
+    LL_GPIO_SetPinMode(SDIO_CK_PIN_PORT, SDIO_CK_PIN_NUM, LL_GPIO_MODE_FLOATING);
+    LL_GPIO_SetPinMode(SDIO_CMD_PIN_PORT, SDIO_CMD_PIN_NUM, LL_GPIO_MODE_FLOATING);
+}
+
+
 void SDIODriver::reset()
 {
 

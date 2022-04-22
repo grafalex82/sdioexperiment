@@ -30,6 +30,19 @@ void cardPowerUp()
     HAL_Delay(1);
 }
 
+
+void cardPowerDown()
+{
+    LL_GPIO_SetOutputPin(ENABLE_PIN_PORT, ENABLE_PIN_NUM);
+}
+
+void cardPowerCycle()
+{
+    cardPowerDown();
+    HAL_Delay(250);
+    cardPowerUp();
+}
+
 SDCard::SDCard()
 {
 

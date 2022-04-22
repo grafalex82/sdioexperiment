@@ -9,6 +9,7 @@ public:
 	SDIODriver();
 
     virtual void init(unsigned int prescaler);
+    virtual void deinit();
     virtual void reset();
     virtual void cmd0_goIdleState();
     virtual bool cmd8_sendInterfaceConditions();

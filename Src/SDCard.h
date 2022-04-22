@@ -13,6 +13,8 @@ typedef SDIODriver SDDriver;
 
 
 void cardPowerUp();
+void cardPowerDown();
+void cardPowerCycle();
 
 class SDCard
 {

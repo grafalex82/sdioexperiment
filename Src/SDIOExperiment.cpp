@@ -65,24 +65,34 @@ void cmdLoopback(const char * argument)
         printf("%s\n", argument);
 }
 
+void reinitDriver(IDriver * newDriver, int prescaler)
+{
+    driver->deinit();
+
+    // Switch the driver, if necessary
+    if(driver != newDriver)
+    {
+        driver->deinit();
+        cardPowerCycle();
+        driver = newDriver;
+    }
+
+    driver->init(prescaler);
+    printf("OK\n");
+}
+
 void cmdSpiInit(const char * argument)
 {
     // Expect argument that is fPCLK prescaler
     int prescaler = atoi(argument);
-
-    driver = &spi;
-    driver->init(prescaler);
-    printf("OK\n");
+    reinitDriver(&spi, prescaler);
 }
 
 void cmdSdioInit(const char * argument)
 {
     // Expect argument that is fPCLK prescaler
     int prescaler = atoi(argument);
-
-    driver = &sdio;
-    driver->init(prescaler);
-    printf("OK\n");
+    reinitDriver(&sdio, prescaler);
 }
 
 void cmdReset(const char *)
@@ -160,12 +170,13 @@ void parseCommand(const char * buf)
 
     // Dispatch the command
     bool handled = false;
-    for(size_t i=0; i<sizeof(commandHandlers)/sizeof(CommandEntry); i++)
+    for(size_t i=0; i<sizeof(commandHandlers)/sizeof(CommandEntry) && cmdLen != 0; i++)
     {
         if(!strncmp(commandHandlers[i].command, buf, cmdLen))
         {
             commandHandlers[i].handler(ptr);
             handled = true;
+            break;
         }
     }
 
@@ -177,7 +188,6 @@ int main(void)
 {
     initBoard();
     initLEDs();
-    cardPowerUp();
 
     HAL_Delay(500);
     printf("============== Let the experiment begin ==============\n");

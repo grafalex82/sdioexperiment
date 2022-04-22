@@ -1,1 +1,1 @@
-py.test -rfeEsxXwa --verbose --showlocals
+py.test -rfeEsxXwa --verbose --showlocals %*

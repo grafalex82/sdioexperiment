@@ -79,6 +79,19 @@ void SPIDriver::init(unsigned int prescaler)
     LL_SPI_Enable(SPI1);
 }
 
+void SPIDriver::deinit()
+{
+    // Disable SPI
+    deselectCard();
+    LL_SPI_Disable(SPI1);
+
+    // Reset pin configuration
+    LL_GPIO_SetPinMode(MOSI_PIN_PORT, MOSI_PIN_NUM, LL_GPIO_MODE_FLOATING);
+    LL_GPIO_SetPinMode(MISO_PIN_PORT, MISO_PIN_NUM, LL_GPIO_MODE_FLOATING);
+    LL_GPIO_SetPinMode(SCK_PIN_PORT, SCK_PIN_NUM, LL_GPIO_MODE_FLOATING);
+    LL_GPIO_SetPinMode(CS_PIN_PORT, CS_PIN_NUM, LL_GPIO_MODE_FLOATING);
+}
+
 void SPIDriver::reset()
 {
     // Card power mgmt requires sending at least 74 clock pulses before the first command while CS is up. We will send 80 pulses

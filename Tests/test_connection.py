@@ -55,6 +55,8 @@ def test_spi_init(board):
     v2card = sendCommand(board, "CMD8")
     assert(v2card)
 
+    sendCommand(board, "CMD58")
+
     status = "Busy"
     retries = 0
     while status == "Busy":
