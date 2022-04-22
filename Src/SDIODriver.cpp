@@ -111,6 +111,9 @@ bool SDIODriver::cmd8_sendInterfaceConditions()
     uint32_t r = SDMMC_CmdOperCond(SDIO);
     printf("CMD8 error code: %08lx\n", r);
 
+    uint32_t r7 = SDIO_GetResponse(SDIO, SDIO_RESP1);
+    printf("R7 = %08lx\n", r7);
+
     return r == SDMMC_ERROR_NONE;
 }
 

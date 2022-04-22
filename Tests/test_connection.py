@@ -12,6 +12,7 @@ class SD:
     def sendCommand(self, cmd):
         self.port.write((cmd + "\n").encode())
 
+        response = ""
         while True:
             line = self.port.readline().decode().rstrip()
             print("Received: " + line)
@@ -19,13 +20,17 @@ class SD:
             if not line:
                 continue
 
-            resp, argument = line.split(' ', 1) if ' ' in line else (line, None)
+            status, argument = line.split(' ', 1) if ' ' in line else (line, None)
 
-            if resp == "OK":
-                return argument
+            if status == "OK":
+                return argument, response
 
-            if resp == "ERROR":
+            if status == "ERROR":
                 raise RuntimeError(argument)
+
+            response += line + "\n"
+#            print("Response: " + response)
+
 
     def init(self, mode, prescaler):
         self.sendCommand(mode + "_INIT " + str(prescaler))
@@ -37,11 +42,14 @@ class SD:
         self.sendCommand("CMD0")
     
     def cmd8(self):
-        return self.sendCommand("CMD8")
+        v2card, response = self.sendCommand("CMD8")
+        assert("R7 = 000001aa" in response)
+        return v2card
 
     def acmd41(self, hostSupportsSDHC):
         self.sendCommand("CMD55")
-        return self.sendCommand("ACMD41 "+str(hostSupportsSDHC))
+        status, _ = self.sendCommand("ACMD41 "+str(hostSupportsSDHC))
+        return status
 
 
 
@@ -85,15 +93,15 @@ def test_sdio_init(sd):
         assert(retries < 10)
     assert(status == "Valid")
 
-    sdhc = sd.sendCommand("CMD58")
+    sdhc, _ = sd.sendCommand("CMD58")
     assert(sdhc == "SDHC")
 
 
 def test_spi_init(sd):
     sd.init("SPI", 256)
     sd.reset()
-    sd.sendCommand("CMD0")
-    v2card = sd.sendCommand("CMD8")
+    sd.cmd0()
+    v2card = sd.cmd8()
     assert(v2card)
 
     sd.sendCommand("CMD58")
@@ -106,7 +114,7 @@ def test_spi_init(sd):
         assert(retries < 10)
     assert(status == "Valid")
 
-    sdhc = sd.sendCommand("CMD58")
+    sdhc, _ = sd.sendCommand("CMD58")
     assert(sdhc == "SDHC")
 
 
