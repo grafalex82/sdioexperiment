@@ -27,6 +27,23 @@ class SD:
             if resp == "ERROR":
                 raise RuntimeError(argument)
 
+    def init(self, mode, prescaler):
+        self.sendCommand(mode + "_INIT " + str(prescaler))
+
+    def reset(self):
+        self.sendCommand("RESET")
+
+    def cmd0(self):
+        self.sendCommand("CMD0")
+    
+    def cmd8(self):
+        return self.sendCommand("CMD8")
+
+    def acmd41(self, hostSupportsSDHC):
+        self.sendCommand("CMD55")
+        return self.sendCommand("ACMD41 "+str(hostSupportsSDHC))
+
+
 
 @pytest.fixture(scope="session", autouse=True)
 def sd():
@@ -53,9 +70,28 @@ def test_loopback_error_msg(sd):
     assert(str(err.value) == "error message")
 
 
+def test_sdio_init(sd):
+    sd.init("SDIO", 256)
+    sd.reset()    
+    sd.cmd0()
+    v2card = sd.cmd8()
+    assert(v2card)
+
+    status = "Busy"
+    retries = 0
+    while status == "Busy":
+        status = sd.acmd41(v2card)
+        retries += 1
+        assert(retries < 10)
+    assert(status == "Valid")
+
+    sdhc = sd.sendCommand("CMD58")
+    assert(sdhc == "SDHC")
+
+
 def test_spi_init(sd):
-    sd.sendCommand("SPI_INIT 256")
-    sd.sendCommand("RESET")
+    sd.init("SPI", 256)
+    sd.reset()
     sd.sendCommand("CMD0")
     v2card = sd.sendCommand("CMD8")
     assert(v2card)
@@ -65,8 +101,7 @@ def test_spi_init(sd):
     status = "Busy"
     retries = 0
     while status == "Busy":
-        sd.sendCommand("CMD55")
-        status = sd.sendCommand("ACMD41 " + v2card)
+        status = sd.acmd41(v2card)
         retries += 1
         assert(retries < 10)
     assert(status == "Valid")
@@ -75,21 +110,3 @@ def test_spi_init(sd):
     assert(sdhc == "SDHC")
 
 
-def test_sdio_init(sd):
-    sd.sendCommand("SDIO_INIT 256")
-    sd.sendCommand("RESET")
-    sd.sendCommand("CMD0")
-    v2card = sd.sendCommand("CMD8")
-    assert(v2card)
-
-    status = "Busy"
-    retries = 0
-    while status == "Busy":
-        sd.sendCommand("CMD55")
-        status = sd.sendCommand("ACMD41 " + v2card)
-        retries += 1
-        assert(retries < 10)
-    assert(status == "Valid")
-
-    sdhc = sd.sendCommand("CMD58")
-    assert(sdhc == "SDHC")
