@@ -57,14 +57,15 @@ void SDIODriver::init(unsigned int prescaler)
     // Enable SDIO clocks now
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_SDIO);
 
-    // Initialize SDIO at 400kHz first
+    // Initialize SDIO at <=400kHz first
+    printf("Configuring SDIO with prescaler %d (freq=%dkHz)\n", prescaler, 72000/(prescaler+2));
     SDIO_InitTypeDef initStruct;
     initStruct.ClockEdge = SDIO_CLOCK_EDGE_RISING;
     initStruct.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
     initStruct.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
     initStruct.BusWide = SDIO_BUS_WIDE_1B;
     initStruct.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
-    initStruct.ClockDiv = SDIO_INIT_CLK_DIV;
+    initStruct.ClockDiv = prescaler; //SDIO_INIT_CLK_DIV
     SDIO_Init(SDIO, initStruct);
 
     //Enable SDIO power

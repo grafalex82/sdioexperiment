@@ -81,7 +81,7 @@ def test_loopback_error_msg(sd):
 
 
 def test_sdio_init(sd):
-    sd.init("SDIO", 256)
+    sd.init("SDIO", 178)
     sd.reset()    
     sd.cmd0()
     v2card = sd.cmd8()
