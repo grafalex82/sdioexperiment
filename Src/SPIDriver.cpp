@@ -122,18 +122,11 @@ inline void SPIDriver::transmitByte(uint8_t byte)
 
 inline uint8_t SPIDriver::receiveByte()
 {
-    // Wait until previous byte is transmitted
-    while(!LL_SPI_IsActiveFlag_TXE(SPI1))
-        ;
-
-    // Transmit a dummy byte and wait while byte is received (transmitting a dummy byte at the same time)
-    LL_SPI_TransmitData8(SPI1, 0xff);
-    while(!LL_SPI_IsActiveFlag_RXNE(SPI1))
-        ;
+    // Transmit a dummy byte, receiving a byte will happen at the same time
+    transmitByte(0xff);
 
     // Get new byte from input shifting register
     uint8_t r = LL_SPI_ReceiveData8(SPI1);
-    //printf("%02x", r);
     return r;
 }
 
