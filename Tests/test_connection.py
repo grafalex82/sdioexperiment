@@ -42,12 +42,12 @@ class SD:
     
     def cmd8(self):
         v2card, response = self.sendCommand("CMD8")
-        assert("R7 = 000001aa" in response)
-        return v2card
+        assert("R7 = 000001aa" in response or "R1 = 05" in response)
+        return int(v2card)
 
     def acmd41(self, hostSupportsSDHC):
         self.sendCommand("CMD55")
-        status, _ = self.sendCommand("ACMD41 "+str(hostSupportsSDHC))
+        status, _ = self.sendCommand("ACMD41 "+ ("1" if hostSupportsSDHC else "0"))
         return status
 
     def cmd58(self):
@@ -92,7 +92,7 @@ def test_sdio_init(sd):
     status = "Busy"
     retries = 0
     while status == "Busy":
-        status = sd.acmd41(v2card)
+        status = sd.acmd41(v2card > 1)
         retries += 1
         assert(retries < 10)
     assert(status == "Valid")
@@ -113,12 +113,12 @@ def test_spi_init(sd):
     status = "Busy"
     retries = 0
     while status == "Busy":
-        status = sd.acmd41(v2card)
+        status = sd.acmd41(v2card > 1)
         retries += 1
         assert(retries < 10)
     assert(status == "Valid")
 
     sdhc = sd.cmd58()
-    assert(sdhc == "SDHC")
+    assert(sdhc == "SDHC" if v2card else "SDSC")
 
 
