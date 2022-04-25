@@ -273,5 +273,25 @@ bool SPIDriver::cmd58_readCCS()
 
 void SPIDriver::cmd2_getCID()
 {
-    // Valid for SDIO mode only
+    // CMD10 is the command to get CID
+    printf("Sending CMD10 to get CID\n");
+    sendCommand(10, 0);
+    waitForR1();
+
+    // Wait for tocken
+    while(receiveByte() == 0xff)
+        ;
+
+    // Receive the data
+    uint8_t resp[16];
+    receive(resp, 16);
+
+    // Parse the response
+    printf("CID register:\n");
+    printf("  Manufacturer ID: %02x\n",  resp[0]);
+    printf("  OEM/Application ID: %c%c\n", resp[1], resp[2]);
+    printf("  Product Name: %c%c%c%c%c\n", resp[3], resp[4], resp[5], resp[6], resp[7]);
+    printf("  Product revision: %02x\n",  resp[8]);
+    printf("  Product serial number: %08x\n", (resp[9] << 24) | (resp[10] << 16) | (resp[11] << 8) | resp[12]);
+    printf("  Manufacturing date: Year %d Month %d\n", ((resp[13] << 4) & 0xf0) | (resp[14] >> 4 & 0x0f), resp[14] & 0x0f);
 }
