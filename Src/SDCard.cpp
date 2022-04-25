@@ -82,7 +82,7 @@ bool SDCard::negotiateCapacity(bool hostSupportSdhc)
     }
     while(!valid);
 
-    // We are interested in Card Capacity Status bit to distinquish SDSC and SDHC/SDXC cards
+    // We are interested in Card Capacity Status bit to distinguish SDSC and SDHC/SDXC cards
     bool sdhc = driver.cmd58_readCCS();
     return sdhc;
 }

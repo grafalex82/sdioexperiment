@@ -135,6 +135,12 @@ void cmd58_readCCS(const char *)
     printf("OK %s\n", ccs ? "SDHC" : "SDSC");
 }
 
+void cmd2_getCID(const char *)
+{
+    driver->cmd2_getCID();
+    printf("OK\n");
+}
+
 struct CommandEntry
 {
     const char * command;
@@ -150,7 +156,8 @@ CommandEntry commandHandlers[] = {
     {"CMD8",        cmd8_sendInterfaceConditions},
     {"CMD55",       cmd55_sendAppCommand},
     {"ACMD41",      acmd41_sendAppOpConditions},
-    {"CMD58",       cmd58_readCCS}
+    {"CMD58",       cmd58_readCCS},
+    {"CMD2",        cmd2_getCID}
 };
 
 void parseCommand(const char * buf)

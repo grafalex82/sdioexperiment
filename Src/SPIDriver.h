@@ -19,11 +19,12 @@ public:
     virtual void cmd55_sendAppCommand();
     virtual bool acmd41_sendAppOpConditions(bool hostSupportSdhc);
     virtual bool cmd58_readCCS();
-
-	void transmit(const uint8_t * buf, size_t len);
-	void receive(uint8_t * buf, size_t len);
+    virtual void cmd2_getCID();
 
 private:
+    void transmit(const uint8_t * buf, size_t len);
+    void receive(uint8_t * buf, size_t len);
+
 	static uint8_t CRC7(uint8_t * buf, size_t len);
 	void transmitByte(uint8_t byte);
 	uint8_t receiveByte();

@@ -141,8 +141,42 @@ bool SDIODriver::cmd58_readCCS()
     // Little hack: if executed right after acmd41_sendAppOpConditions()
     // response register still contains Operations Conditions Register (OCR)
     uint32_t ocr = SDIO_GetResponse(SDIO, SDIO_RESP1);
-    printf("OCR = %08lx\n", ocr);
+    printf("Hack: catching OCR from previously executed ACMD41. OCR = %08lx\n", ocr);
 
     // Bit 30 contains Card Capacity Status (CCS) - true if the card is an SDHC or SDXC
     return ocr & (1<<30);
+}
+
+void SDIODriver::cmd2_getCID()
+{
+    // Send the commsnd
+    uint32_t r = SDMMC_CmdSendCID(SDIO);
+    printf("CMD2 error code: %08lx\n", r);
+
+    // Get the 128-bit response
+    int resp1 = SDIO_GetResponse(SDIO, SDIO_RESP1);
+    int resp2 = SDIO_GetResponse(SDIO, SDIO_RESP2);
+    int resp3 = SDIO_GetResponse(SDIO, SDIO_RESP3);
+    int resp4 = SDIO_GetResponse(SDIO, SDIO_RESP4);
+
+    // Parse the response
+    printf("CID register:\n");
+    printf("  Manufacturer ID: %02x\n",  (resp1 >> 24) & 0xff);
+    printf("  OEM/Application ID: %c%c\n",
+           (resp1 >> 16) & 0xff,
+           (resp1 >> 8) & 0xff);
+    printf("  Product Name: %c%c%c%c%c\n",
+           resp1 & 0xff,
+           (resp2 >> 24) & 0xff,
+           (resp2 >> 16) & 0xff,
+           (resp2 >> 8) & 0xff,
+           resp2 & 0xff
+           );
+    printf("  Product revision: %02x\n",  (resp3 >> 24) & 0xff);
+    printf("  Product serial number: %08x\n",
+           (resp3 << 8) | ((resp4 >> 24) & 0xff));
+    printf("  Manufacturing date: Year %d Month %d\n",
+           (resp4 >> 12) & 0xff,
+           (resp4 >> 8) & 0xf
+           );
 }

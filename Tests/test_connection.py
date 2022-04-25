@@ -54,6 +54,9 @@ class SD:
         sdhc, _ = self.sendCommand("CMD58")
         return sdhc
 
+    def cmd2(self):
+        _, resp = self.sendCommand("CMD2")
+
 
 @pytest.fixture(scope="session", autouse=True)
 def sd():
@@ -87,8 +90,6 @@ def test_sdio_init(sd):
     v2card = sd.cmd8()
     assert(v2card)
 
-    sd.cmd58()
-
     status = "Busy"
     retries = 0
     while status == "Busy":
@@ -100,6 +101,9 @@ def test_sdio_init(sd):
     sdhc = sd.cmd58()
     assert(sdhc == "SDHC")
 
+    sd.cmd2()
+    assert(False)
+
 
 def test_spi_init(sd):
     sd.init("SPI", 256)
@@ -108,7 +112,7 @@ def test_spi_init(sd):
     v2card = sd.cmd8()
     assert(v2card)
 
-    sd.cmd58()
+    sd.cmd58() #TODO Check if this is really needed
 
     status = "Busy"
     retries = 0

@@ -270,3 +270,8 @@ bool SPIDriver::cmd58_readCCS()
     // Bit 30 contains Card Capacity Status (CCS) - true if the card is an SDHC or SDXC
     return ocr & (1 << 30);
 }
+
+void SPIDriver::cmd2_getCID()
+{
+    // Valid for SDIO mode only
+}

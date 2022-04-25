@@ -16,7 +16,7 @@ public:
     virtual void cmd55_sendAppCommand();
     virtual bool acmd41_sendAppOpConditions(bool hostSupportSdhc);
     virtual bool cmd58_readCCS();
-
+    virtual void cmd2_getCID();
 private:
 };
 
