@@ -17,6 +17,8 @@ public:
     virtual bool acmd41_sendAppOpConditions(bool hostSupportSdhc);
     virtual bool cmd58_readCCS();
     virtual void cmd2_getCID();
+    virtual uint16_t cmd3_getRCA();
+
 private:
 };
 

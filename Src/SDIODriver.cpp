@@ -180,3 +180,11 @@ void SDIODriver::cmd2_getCID()
            (resp4 >> 8) & 0xf
            );
 }
+
+uint16_t SDIODriver::cmd3_getRCA()
+{
+    uint16_t rca;
+    uint32_t r = SDMMC_CmdSetRelAdd(SDIO, &rca);
+    printf("CMD3 response %08lx. RCA=%04x\n", r, rca);
+    return rca;
+}

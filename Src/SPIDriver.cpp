@@ -306,3 +306,9 @@ void SPIDriver::cmd2_getCID()
     printf("  Product serial number: %08x\n", (resp[9] << 24) | (resp[10] << 16) | (resp[11] << 8) | resp[12]);
     printf("  Manufacturing date: Year %d Month %d\n", ((resp[13] << 4) & 0xf0) | (resp[14] >> 4 & 0x0f), resp[14] & 0x0f);
 }
+
+uint16_t SPIDriver::cmd3_getRCA()
+{
+    // Nothing to do in SPI mode
+    return 0;
+}

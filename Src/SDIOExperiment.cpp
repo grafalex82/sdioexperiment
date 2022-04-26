@@ -141,6 +141,12 @@ void cmd2_getCID(const char *)
     printf("OK\n");
 }
 
+void cmd3_getRCA(const char *)
+{
+    uint16_t rca = driver->cmd3_getRCA();
+    printf("OK %d\n", rca);
+}
+
 struct CommandEntry
 {
     const char * command;
@@ -157,7 +163,8 @@ CommandEntry commandHandlers[] = {
     {"CMD55",       cmd55_sendAppCommand},
     {"ACMD41",      acmd41_sendAppOpConditions},
     {"CMD58",       cmd58_readCCS},
-    {"CMD2",        cmd2_getCID}
+    {"CMD2",        cmd2_getCID},
+    {"CMD3",        cmd3_getRCA}
 };
 
 void parseCommand(const char * buf)

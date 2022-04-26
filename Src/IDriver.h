@@ -1,6 +1,8 @@
 #ifndef IDRIVER_H
 #define IDRIVER_H
 
+#include <stdint.h>
+
 class IDriver
 {
 public:
@@ -14,6 +16,7 @@ public:
     virtual bool cmd58_readCCS() = 0;
 
     virtual void cmd2_getCID() = 0;
+    virtual uint16_t cmd3_getRCA() = 0;
 };
 
 #endif // IDRIVER_H
