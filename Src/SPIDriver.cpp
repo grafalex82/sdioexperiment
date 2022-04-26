@@ -312,3 +312,8 @@ uint16_t SPIDriver::cmd3_getRCA()
     // Nothing to do in SPI mode
     return 0;
 }
+
+void SPIDriver::cmd7_selectCard(uint16_t)
+{
+    // Nothing to do in SPI mode
+}

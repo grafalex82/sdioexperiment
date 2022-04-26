@@ -17,6 +17,7 @@ public:
 
     virtual void cmd2_getCID() = 0;
     virtual uint16_t cmd3_getRCA() = 0;
+    virtual void cmd7_selectCard(uint16_t rca) = 0;
 };
 
 #endif // IDRIVER_H

@@ -18,6 +18,7 @@ public:
     virtual bool cmd58_readCCS();
     virtual void cmd2_getCID();
     virtual uint16_t cmd3_getRCA();
+    virtual void cmd7_selectCard(uint16_t rca);
 
 private:
 };

@@ -188,3 +188,9 @@ uint16_t SDIODriver::cmd3_getRCA()
     printf("CMD3 response %08lx. RCA=%04x\n", r, rca);
     return rca;
 }
+
+void SDIODriver::cmd7_selectCard(uint16_t rca)
+{
+    uint32_t r = SDMMC_CmdSelDesel(SDIO, rca << 16);
+    printf("CMD7 response %08lx\n", r);
+}

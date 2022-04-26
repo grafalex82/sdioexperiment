@@ -62,6 +62,9 @@ class SD:
         assert("RCA=0001" in resp)
         return status
 
+    def cmd7(self, rca):
+        status, resp = self.sendCommand("CMD7 " + str(rca))
+
 
 @pytest.fixture(scope="session", autouse=True)
 def sd():
@@ -107,7 +110,8 @@ def test_sdio_init(sd):
     assert(sdhc == "SDHC")
 
     sd.cmd2()
-    sd.cmd3()
+    rca = sd.cmd3()
+    sd.cmd7(rca)
     assert(False)
 
 
