@@ -24,6 +24,7 @@ public:
 private:
     void transmit(const uint8_t * buf, size_t len);
     void receive(uint8_t * buf, size_t len);
+    void readData(uint8_t * buf, size_t len);
 
 	static uint8_t CRC7(uint8_t * buf, size_t len);
 	void transmitByte(uint8_t byte);

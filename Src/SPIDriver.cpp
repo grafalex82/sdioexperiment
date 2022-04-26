@@ -151,6 +151,20 @@ void SPIDriver::receive(uint8_t * buf, size_t len)
     }
 }
 
+void SPIDriver::readData(uint8_t * buf, size_t len)
+{
+    // Wait for tocken
+    while(receiveByte() == 0xff)
+        ;
+
+    // Read the data
+    receive(buf, len);
+
+    // Receive the CRC
+    uint16_t crc;
+    receive((uint8_t *)&crc, sizeof(crc));
+}
+
 uint8_t SPIDriver::CRC7(uint8_t * buf, size_t len)
 {
     uint8_t crc = 0;
@@ -278,13 +292,9 @@ void SPIDriver::cmd2_getCID()
     sendCommand(10, 0);
     waitForR1();
 
-    // Wait for tocken
-    while(receiveByte() == 0xff)
-        ;
-
-    // Receive the data
+    // Receive CID register data
     uint8_t resp[16];
-    receive(resp, 16);
+    readData(resp, 16);
 
     // Parse the response
     printf("CID register:\n");
@@ -294,8 +304,4 @@ void SPIDriver::cmd2_getCID()
     printf("  Product revision: %02x\n",  resp[8]);
     printf("  Product serial number: %08x\n", (resp[9] << 24) | (resp[10] << 16) | (resp[11] << 8) | resp[12]);
     printf("  Manufacturing date: Year %d Month %d\n", ((resp[13] << 4) & 0xf0) | (resp[14] >> 4 & 0x0f), resp[14] & 0x0f);
-
-    // Receive the CRC
-    uint16_t crc;
-    receive((uint8_t *)&crc, sizeof(crc));
 }
