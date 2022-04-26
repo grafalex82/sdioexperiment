@@ -266,6 +266,7 @@ bool SPIDriver::acmd41_sendAppOpConditions(bool hostSupportSdhc)
 {
     uint32_t arg = SDMMC_VOLTAGE_WINDOW_SD;
     arg |= hostSupportSdhc ? SDMMC_HIGH_CAPACITY : SDMMC_STD_CAPACITY;
+    printf("Sending ACMD41 with arg=%08lx\n", arg);
     sendCommand(SDMMC_CMD_SD_APP_OP_COND, arg);
 
     uint8_t r = waitForR1();
