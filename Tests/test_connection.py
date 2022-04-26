@@ -123,7 +123,7 @@ def test_spi_init(sd):
     assert(status == "Valid")
 
     sdhc = sd.cmd58()
-    assert(sdhc == "SDHC" if v2card else "SDSC")
+    assert(sdhc == "SDHC" if v2card > 1 else "SDSC")
 
     sd.cmd2()
     assert(False)
