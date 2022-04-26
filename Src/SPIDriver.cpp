@@ -294,4 +294,8 @@ void SPIDriver::cmd2_getCID()
     printf("  Product revision: %02x\n",  resp[8]);
     printf("  Product serial number: %08x\n", (resp[9] << 24) | (resp[10] << 16) | (resp[11] << 8) | resp[12]);
     printf("  Manufacturing date: Year %d Month %d\n", ((resp[13] << 4) & 0xf0) | (resp[14] >> 4 & 0x0f), resp[14] & 0x0f);
+
+    // Receive the CRC
+    uint16_t crc;
+    receive((uint8_t *)&crc, sizeof(crc));
 }
