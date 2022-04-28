@@ -1,4 +1,5 @@
 #include "SPIDriver.h"
+#include "DumpFunctions.h"
 
 #include <stm32f1xx_ll_spi.h>
 #include <stm32f1xx_ll_bus.h>
@@ -297,14 +298,8 @@ void SPIDriver::cmd2_getCID()
     uint8_t resp[16];
     readData(resp, 16);
 
-    // Parse the response
-    printf("CID register:\n");
-    printf("  Manufacturer ID: %02x\n",  resp[0]);
-    printf("  OEM/Application ID: %c%c\n", resp[1], resp[2]);
-    printf("  Product Name: %c%c%c%c%c\n", resp[3], resp[4], resp[5], resp[6], resp[7]);
-    printf("  Product revision: %02x\n",  resp[8]);
-    printf("  Product serial number: %08x\n", (resp[9] << 24) | (resp[10] << 16) | (resp[11] << 8) | resp[12]);
-    printf("  Manufacturing date: Year %d Month %d\n", ((resp[13] << 4) & 0xf0) | (resp[14] >> 4 & 0x0f), resp[14] & 0x0f);
+    // Parse and print the response
+    printCID(resp);
 }
 
 uint16_t SPIDriver::cmd3_getRCA()

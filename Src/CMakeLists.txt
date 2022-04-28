@@ -14,6 +14,8 @@ SET(SOURCE_FILES
         UartUtils.cpp
         UartUtils.h
         IDriver.h
+        DumpFunctions.cpp
+        DumpFunctions.h
 )
 
 INCLUDE_DIRECTORIES(

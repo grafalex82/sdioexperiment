@@ -1,4 +1,5 @@
 #include "SDIODriver.h"
+#include "DumpFunctions.h"
 
 #include <stm32f1xx_ll_bus.h>
 #include <stm32f1xx_ll_gpio.h>
@@ -154,31 +155,11 @@ void SDIODriver::cmd2_getCID()
     printf("CMD2 error code: %08lx\n", r);
 
     // Get the 128-bit response
-    int resp1 = SDIO_GetResponse(SDIO, SDIO_RESP1);
-    int resp2 = SDIO_GetResponse(SDIO, SDIO_RESP2);
-    int resp3 = SDIO_GetResponse(SDIO, SDIO_RESP3);
-    int resp4 = SDIO_GetResponse(SDIO, SDIO_RESP4);
+    uint8_t resp[16];
+    get128BitResponse(resp);
 
-    // Parse the response
-    printf("CID register:\n");
-    printf("  Manufacturer ID: %02x\n",  (resp1 >> 24) & 0xff);
-    printf("  OEM/Application ID: %c%c\n",
-           (resp1 >> 16) & 0xff,
-           (resp1 >> 8) & 0xff);
-    printf("  Product Name: %c%c%c%c%c\n",
-           resp1 & 0xff,
-           (resp2 >> 24) & 0xff,
-           (resp2 >> 16) & 0xff,
-           (resp2 >> 8) & 0xff,
-           resp2 & 0xff
-           );
-    printf("  Product revision: %02x\n",  (resp3 >> 24) & 0xff);
-    printf("  Product serial number: %08x\n",
-           (resp3 << 8) | ((resp4 >> 24) & 0xff));
-    printf("  Manufacturing date: Year %d Month %d\n",
-           (resp4 >> 12) & 0xff,
-           (resp4 >> 8) & 0xf
-           );
+    // Print the result
+    printCID(resp);
 }
 
 uint16_t SDIODriver::cmd3_getRCA()
@@ -193,4 +174,19 @@ void SDIODriver::cmd7_selectCard(uint16_t rca)
 {
     uint32_t r = SDMMC_CmdSelDesel(SDIO, rca << 16);
     printf("CMD7 response %08lx\n", r);
+}
+void int2bytes(int value, uint8_t * bytes)
+{
+    bytes[0] = (value >> 24) & 0xff;
+    bytes[1] = (value >> 16) & 0xff;
+    bytes[2] = (value >> 8) & 0xff;
+    bytes[3] = value & 0xff;
+}
+
+void SDIODriver::get128BitResponse(uint8_t * resp)
+{
+    int2bytes(SDIO_GetResponse(SDIO, SDIO_RESP1), resp);
+    int2bytes(SDIO_GetResponse(SDIO, SDIO_RESP2), resp + 4);
+    int2bytes(SDIO_GetResponse(SDIO, SDIO_RESP3), resp + 8);
+    int2bytes(SDIO_GetResponse(SDIO, SDIO_RESP4), resp + 12);
 }

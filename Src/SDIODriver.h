@@ -21,6 +21,7 @@ public:
     virtual void cmd7_selectCard(uint16_t rca);
 
 private:
+    void get128BitResponse(uint8_t * resp);
 };
 
 #endif // SDIODRIVER_H
