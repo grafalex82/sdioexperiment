@@ -155,6 +155,22 @@ void cmd7_selectCard(const char * argument)
     printf("OK\n");
 }
 
+void cmd9_getCSD(const char * argument)
+{
+    // Expect argument that is RCA of the card to select
+    int rca = atoi(argument);
+    driver->cmd9_getCSD(rca);
+    printf("OK\n");
+}
+
+void cmd10_getCID(const char * argument)
+{
+    // Expect argument that is RCA of the card to select
+    int rca = atoi(argument);
+    driver->cmd10_getCID(rca);
+    printf("OK\n");
+}
+
 struct CommandEntry
 {
     const char * command;
@@ -173,7 +189,9 @@ CommandEntry commandHandlers[] = {
     {"CMD58",       cmd58_readCCS},
     {"CMD2",        cmd2_getCID},
     {"CMD3",        cmd3_getRCA},
-    {"CMD7",        cmd7_selectCard}
+    {"CMD7",        cmd7_selectCard},
+    {"CMD9",        cmd9_getCSD},
+    {"CMD10",       cmd10_getCID}
 };
 
 void parseCommand(const char * buf)

@@ -295,11 +295,11 @@ void SPIDriver::cmd2_getCID()
     waitForR1();
 
     // Receive CID register data
-    uint8_t resp[16];
-    readData(resp, 16);
+    uint8_t cid[16];
+    readData(cid, 16);
 
     // Parse and print the response
-    printCID(resp);
+    printCID(cid);
 }
 
 uint16_t SPIDriver::cmd3_getRCA()
@@ -311,4 +311,23 @@ uint16_t SPIDriver::cmd3_getRCA()
 void SPIDriver::cmd7_selectCard(uint16_t)
 {
     // Nothing to do in SPI mode
+}
+
+void SPIDriver::cmd9_getCSD(uint16_t rca)
+{
+    printf("Sending CMD9 to get CSD\n");
+    sendCommand(9, 0);
+    waitForR1();
+
+    // Receive CSD register data
+    uint8_t csd[16];
+    readData(csd, 16);
+
+    // Parse the response
+    printCSD(csd);
+}
+
+void SPIDriver::cmd10_getCID(uint16_t rca)
+{
+    // TODO
 }

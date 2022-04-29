@@ -22,6 +22,8 @@ public:
     virtual void cmd2_getCID();
     virtual uint16_t cmd3_getRCA();
     virtual void cmd7_selectCard(uint16_t rca);
+    virtual void cmd9_getCSD(uint16_t rca);
+    virtual void cmd10_getCID(uint16_t rca);
 
 private:
     void transmit(const uint8_t * buf, size_t len);

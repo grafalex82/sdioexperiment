@@ -65,6 +65,12 @@ class SD:
     def cmd7(self, rca):
         status, resp = self.sendCommand("CMD7 " + str(rca))
 
+    def cmd9(self, rca):
+        status, resp = self.sendCommand("CMD9 " + str(rca))
+
+    def cmd10(self, rca):
+        status, resp = self.sendCommand("CMD10 " + str(rca))
+
 
 @pytest.fixture(scope="session", autouse=True)
 def sd():
@@ -111,11 +117,21 @@ def test_sdio_init(sd):
 
     sd.cmd2()
     rca = sd.cmd3()
-    sd.cmd7(rca)
+
+    sd.cmd9(rca)
+    sd.cmd10(rca)
+
+#    sd.cmd7(rca)
+#    sd.cmd7(0)
     assert(False)
 
 
 def test_spi_init(sd):
+    # SPI initialization does not work without SDIO (for some reason)
+    sd.init("SDIO", 178)
+    sd.reset()
+    sd.cmd0()
+
     sd.init("SPI", 256)
     sd.reset()
     sd.cmd0()
@@ -136,5 +152,6 @@ def test_spi_init(sd):
     assert(sdhc == "SDHC" if v2card > 1 else "SDSC")
 
     sd.cmd2()
+    sd.cmd9(0)
     assert(False)
 

@@ -175,6 +175,25 @@ void SDIODriver::cmd7_selectCard(uint16_t rca)
     uint32_t r = SDMMC_CmdSelDesel(SDIO, rca << 16);
     printf("CMD7 response %08lx\n", r);
 }
+
+void SDIODriver::cmd9_getCSD(uint16_t rca)
+{
+    // Send the commsnd
+    uint32_t r = SDMMC_CmdSendCSD(SDIO, rca << 16);
+    printf("CMD9 error code: %08lx\n", r);
+
+    // Get the 128-bit response
+    uint8_t csd[16];
+    get128BitResponse(csd);
+
+    // Parse the response
+    printCSD(csd);
+}
+
+void SDIODriver::cmd10_getCID(uint16_t rca)
+{
+}
+
 void int2bytes(int value, uint8_t * bytes)
 {
     bytes[0] = (value >> 24) & 0xff;
