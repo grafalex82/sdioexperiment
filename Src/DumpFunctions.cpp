@@ -41,7 +41,7 @@ void printCSDv1(uint8_t * csd)
     printf("  Erase sector size (SECTOR_SIZE): %02x\n", ((csd[10] & 0x3f) << 1) | ((csd[11] >> 7) & 0x1));
     printf("  Write protect group size (WP_GRP_SIZE): %02x\n", csd[11] & 0x7f);
     printf("  Write protect group enable (WP_GRP_ENABLE): %d\n", (csd[12] >> 7) & 0x1);
-    printf("  Write speed factor (R2W_FACTOR): %02x\n", (csd[12] >> 3) & 0x7);
+    printf("  Write speed factor (R2W_FACTOR): %02x\n", (csd[12] >> 2) & 0x7);
     printf("  Max write data block length (WRITE_BL_LEN): %d\n", 1 << (((csd[12] & 0x3) << 2) | ((csd[13] >> 6) & 0x3)));
     printf("  Partial blocks for write allowed (WRITE_BL_PARTIAL): %d\n", (csd[13] >> 5) & 0x1);
     printf("  File format group (FILE_FORMAT_GRP): %d\n", (csd[14] >> 7) & 0x1);
@@ -62,7 +62,33 @@ void printCSDv1(uint8_t * csd)
 
 void printCSDv2(uint8_t * csd)
 {
+    printf("  Device read access time 1 (TAAC): %02x\n", csd[1]);
+    printf("  Device read access time 2 (NSAC): %02x\n", csd[2]);
+    printf("  Max data transfer rate (TRAN_SPEED): %02x\n", csd[3]);
+    printf("  Card command classes (CCC): %03x\n", csd[4] << 4 | csd[5] >> 4);
+    printf("  Max read data block length (READ_BL_LEN): %d\n", 1 << (csd[5] & 0x0f));
+    printf("  Partial block read allowed (READ_BL_PARTIAL): %d\n", (csd[6] >> 7) & 0x01);
+    printf("  Write block misalignment (WRITE_BL_MISALIGN): %d\n", (csd[6] >> 6) & 0x01);
+    printf("  Read block misalignment (READ_BL_MISALIGN): %d\n", (csd[6] >> 5) & 0x01);
+    printf("  DSR Implemented (DSR_IMP): %d\n", (csd[6] >> 4) & 0x01);
+    printf("  Device size (C_SIZE): %d\n", csd[7] << 16 | csd[8] << 8 | csd[9]);
+    printf("  Erase single block enabled (ERASE_BLK_EN): %d\n", (csd[10] >> 6) & 0x1);
+    printf("  Erase sector size (SECTOR_SIZE): %02x\n", ((csd[10] & 0x3f) << 1) | ((csd[11] >> 7) & 0x1));
+    printf("  Write protect group size (WP_GRP_SIZE): %02x\n", csd[11] & 0x7f);
+    printf("  Write protect group enable (WP_GRP_ENABLE): %d\n", (csd[12] >> 7) & 0x1);
+    printf("  Write speed factor (R2W_FACTOR): %02x\n", (csd[12] >> 2) & 0x7);
+    printf("  Max write data block length (WRITE_BL_LEN): %d\n", 1 << (((csd[12] & 0x3) << 2) | ((csd[13] >> 6) & 0x3)));
+    printf("  Partial blocks for write allowed (WRITE_BL_PARTIAL): %d\n", (csd[13] >> 5) & 0x1);
+    printf("  File format group (FILE_FORMAT_GRP): %d\n", (csd[14] >> 7) & 0x1);
+    printf("  Copy flag (COPY): %d\n", (csd[14] >> 6) & 0x1);
+    printf("  Permanent write protection (PERM_WRITE_PROTECT): %d\n", (csd[14] >> 5) & 0x1);
+    printf("  Temporary write protection (TMP_WRITE_PROTECT): %d\n", (csd[14] >> 4) & 0x1);
+    printf("  File format (FILE_FORMAT): %02x\n", (csd[14] >> 2) & 0x3 );
 
+    // Calculate card capacity
+    uint32_t capacity = ((csd[7] << 16 | csd[8] << 8 | csd[9]) + 1) * 512; // (C_SIZE+1)*512Kb
+    printf("\n");
+    printf("  Calculated capacity: %lu Kb\n", capacity);
 }
 
 void printCSD(uint8_t * csd)
