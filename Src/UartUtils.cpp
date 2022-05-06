@@ -77,7 +77,7 @@ void readLine(char * buf, size_t size)
 {
     char * ptr = buf;
 
-    while(ptr + 1 - buf < size)
+    while(ptr + 1  < buf + size)
     {
         char ch = uartWaitForChar();
         if(ch == '\r' || ch == '\n')
