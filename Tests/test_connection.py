@@ -59,7 +59,6 @@ class SD:
 
     def cmd3(self):
         status, resp = self.sendCommand("CMD3")
-        assert("RCA=0001" in resp)
         return status
 
     def cmd7(self, rca):
