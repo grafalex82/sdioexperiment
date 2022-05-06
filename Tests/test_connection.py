@@ -112,7 +112,6 @@ def test_sdio_init(sd):
     assert(status == "Valid")
 
     sdhc = sd.cmd58()
-    assert(sdhc == "SDHC")
 
     sd.cmd2()
     rca = sd.cmd3()
@@ -148,7 +147,6 @@ def test_spi_init(sd):
     assert(status == "Valid")
 
     sdhc = sd.cmd58()
-    assert(sdhc == "SDHC" if v2card > 1 else "SDSC")
 
     sd.cmd2()
     sd.cmd9(0)
