@@ -108,7 +108,7 @@ def test_sdio_init(sd):
     while status == "Busy":
         status = sd.acmd41(v2card > 1)
         retries += 1
-        assert(retries < 10)
+        assert(retries < 20)
     assert(status == "Valid")
 
     sdhc = sd.cmd58()
@@ -144,7 +144,7 @@ def test_spi_init(sd):
     while status == "Busy":
         status = sd.acmd41(v2card > 1)
         retries += 1
-        assert(retries < 10)
+        assert(retries < 20)
     assert(status == "Valid")
 
     sdhc = sd.cmd58()
