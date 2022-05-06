@@ -179,6 +179,7 @@ void SDIODriver::cmd7_selectCard(uint16_t rca)
 void SDIODriver::cmd9_getCSD(uint16_t rca)
 {
     // Send the commsnd
+    printf("Sending CMD9 with RCA=%04x\n", rca);
     uint32_t r = SDMMC_CmdSendCSD(SDIO, rca << 16);
     printf("CMD9 error code: %08lx\n", r);
 
@@ -192,6 +193,7 @@ void SDIODriver::cmd9_getCSD(uint16_t rca)
 
 void SDIODriver::cmd10_getCID(uint16_t rca)
 {
+    // TODO
 }
 
 void int2bytes(int value, uint8_t * bytes)
