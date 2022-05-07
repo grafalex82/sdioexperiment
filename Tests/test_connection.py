@@ -60,9 +60,9 @@ class SD:
     
     def cmd8(self):
         v2card, response = self.sendCommand("CMD8")
-        assert("R7 = 000001aa" in response
-               or "R1 = 05" in response
-               or "error code: 00000004" in response)
+        assert("R7 = 000001aa" in response              # Normal R7 response
+               or "R1 = 05" in response                 # CMD8 will return illegal command in SPI mode for v1 cards
+               or "error code: 00000004" in response)   # CMD8 will timeout in SDIO mode for v1 cards
         return int(v2card)
 
     def acmd41(self, hostSupportsSDHC):
