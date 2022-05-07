@@ -34,13 +34,12 @@ def test_sdio_init(sd):
     sd.init("SDIO", 178)
     sd.reset()    
     sd.cmd0()
-    v2card = sd.cmd8()
-    assert(v2card)
+    cardver = sd.cmd8()
 
     status = "Busy"
     retries = 0
     while status == "Busy":
-        status = sd.acmd41(v2card > 1)
+        status = sd.acmd41(cardver > 1)
         retries += 1
         assert(retries < 20)
     assert(status == "Valid")
@@ -66,15 +65,14 @@ def test_spi_init(sd):
     sd.init("SPI", 256)
     sd.reset()
     sd.cmd0()
-    v2card = sd.cmd8()
-    assert(v2card)
+    cardver = sd.cmd8()
 
     sd.cmd58() #TODO Check if this is really needed
 
     status = "Busy"
     retries = 0
     while status == "Busy":
-        status = sd.acmd41(v2card > 1)
+        status = sd.acmd41(cardver > 1)
         retries += 1
         assert(retries < 20)
     assert(status == "Valid")
