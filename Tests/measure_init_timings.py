@@ -102,12 +102,8 @@ def measureFullInitTimeSPI():
 
 
 
-def runMeasurement(fn, count):
+def runMeasurement(headline, fn, count):
     values = [fn() for i in range(count) ]
-    return values
-
-
-def printMeasurement(headline, values):
     avgValue = median(values)
     minValue = min(values)
     maxValue = max(values)
@@ -122,24 +118,14 @@ sd.init("SDIO", 178)
 sd.reset()
 sd.cmd0()
 
-sdio1 = runMeasurement(measureFullInitTimeSDIO, count)
-sdio2 = runMeasurement(measureBusyTimeSDIO, count)
-#sdio3 = runMeasurement(measureNativeInitTimeSDIO, count)
-#sdio4 = runMeasurement(measureNativeBusyTimeSDIO, count)
+runMeasurement("Full init sequence, SDIO Mode", measureFullInitTimeSDIO, count)
+runMeasurement("Busy time, SDIO Mode", measureBusyTimeSDIO, count)
+#runMeasurement("Native init sequence, SDIO Mode", measureNativeInitTimeSDIO, count)
+#runMeasurement("Native Busy time, SDIO Mode", measureNativeBusyTimeSDIO, count)
 
 sd.init("SPI", 256)
-spi1 = runMeasurement(measureFullInitTimeSPI, count)
-spi2 = runMeasurement(measureBusyTimeSPI, count)
-#spi3 = runMeasurement(measureNativeInitTimeSPI, count)
-#spi4 = runMeasurement(measureNativeBusyTimeSPI, count)
-
-printMeasurement("Full init sequence, SDIO Mode", sdio1)
-printMeasurement("Busy time, SDIO Mode", sdio2)
-#printMeasurement("Native init sequence, SDIO Mode", sdio3)
-#printMeasurement("Native Busy time, SDIO Mode", sdio4)
-
-printMeasurement("Full init sequence, SPI Mode", spi1)
-printMeasurement("Busy time, SPI Mode", spi2)
-#printMeasurement("Native init sequence, SPI Mode", spi3)
-#printMeasurement("Native Busy time, SPI Mode", spi4)
+runMeasurement("Full init sequence, SPI Mode", measureFullInitTimeSPI, count)
+runMeasurement("Busy time, SPI Mode", measureBusyTimeSPI, count)
+#runMeasurement("Native init sequence, SPI Mode", measureNativeInitTimeSPI, count)
+#runMeasurement("Native Busy time, SPI Mode", measureNativeBusyTimeSPI, count)
 
