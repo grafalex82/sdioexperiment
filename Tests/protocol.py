@@ -17,6 +17,8 @@ class CmdResponse:
 class SdProtocol:
     def __init__(self):
         self.port = serial.Serial('COM6', baudrate=115200)
+        self.tstart = 0
+        self.tend = 0
 
 
     def sendCommand(self, cmd):
@@ -47,10 +49,16 @@ class SdProtocol:
                 raise RuntimeError("Expecting TIMESTATS line")
 
             # Parse time stats data
-            resp.tstart = m.group(1)
-            resp.tend = m.group(2)
-            resp.tdelta = m.group(3)
+            resp.tstart = int(m.group(1))
+            resp.tend = int(m.group(2))
+            resp.tdelta = int(m.group(3))
 
+            # Update timing stats
+            if self.tstart == 0:
+                self.tstart = resp.tstart
+            self.tend = resp.tend
+
+            # Return the result
             if resp.status == "OK":
                 return resp
 
@@ -105,3 +113,9 @@ class SdProtocol:
     def cmd10(self, rca):
         resp = self.sendCommand("CMD10 " + str(rca))
         return resp.log     # The log contains a dump of CID register
+
+    def resetTimer(self):
+        self.tstart = 0
+
+    def getElapsedTime(self):
+        return self.tend - self.tstart
