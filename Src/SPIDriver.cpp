@@ -1,5 +1,6 @@
 #include "SPIDriver.h"
 #include "DumpFunctions.h"
+#include "UartUtils.h"
 
 #include <stm32f1xx_ll_spi.h>
 #include <stm32f1xx_ll_bus.h>
@@ -65,7 +66,7 @@ void SPIDriver::init(unsigned int prescaler)
         div++;
 
     // Configure SPI
-    printf("Configuring SPI with prescaler %d (div=%ld, freq=%dkHz)\n", prescaler, div, freq);
+    if(getVerboseLevel()) printf("Configuring SPI with prescaler %d (div=%ld, freq=%dkHz)\n", prescaler, div, freq);
     LL_SPI_SetMode(SPI1, LL_SPI_MODE_MASTER);
     LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
     LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
@@ -214,7 +215,7 @@ uint32_t SPIDriver::waitForR3R7()
     uint8_t r1 = waitForR1();
     if(r1 == (R1_ILLEGAL_COMMAND | R1_IDLE_STATE))
     {
-        printf("R1 = %02x (Illegal command, possibly a SDSC card)... ", r1);
+        if(getVerboseLevel()) printf("R1 = %02x (Illegal command, possibly a SDSC card)... ", r1);
         return 0;
     }
 
@@ -241,7 +242,7 @@ void SPIDriver::cmd0_goIdleState()
 
 bool SPIDriver::cmd8_sendInterfaceConditions()
 {
-    printf("Sending CMD8 (get interface conditions)... ");
+    if(getVerboseLevel()) printf("Sending CMD8 (get interface conditions)... ");
 
     //CMD8 argunemnts: 0x01 - request voltage3.3V, 0xAA - check pattern
     sendCommand(SDMMC_CMD_HS_SEND_EXT_CSD, 0x1AA);
@@ -250,7 +251,7 @@ bool SPIDriver::cmd8_sendInterfaceConditions()
     LL_GPIO_ResetOutputPin(LED2_PORT, LED2_PIN);
     uint32_t r7 = waitForR3R7();
     LL_GPIO_SetOutputPin(LED2_PORT, LED2_PIN);
-    printf("R7 = %08lx\n", r7);
+    if(getVerboseLevel()) printf("R7 = %08lx\n", r7);
 
     // Assert r7 = 0x1aa - the card confirms 3.3V voltage and 0xAA check pattern
     return r7 == 0x1aa;
@@ -258,7 +259,6 @@ bool SPIDriver::cmd8_sendInterfaceConditions()
 
 void SPIDriver::cmd55_sendAppCommand()
 {
-    //printf("Sending CMD55\n");
     sendCommand(SDMMC_CMD_APP_CMD, 0);
     waitForR1();
 }
@@ -267,7 +267,7 @@ bool SPIDriver::acmd41_sendAppOpConditions(bool hostSupportSdhc)
 {
     uint32_t arg = SDMMC_VOLTAGE_WINDOW_SD;
     arg |= hostSupportSdhc ? SDMMC_HIGH_CAPACITY : SDMMC_STD_CAPACITY;
-    printf("Sending ACMD41 with arg=%08lx\n", arg);
+    if(getVerboseLevel()) printf("Sending ACMD41 with arg=%08lx\n", arg);
     sendCommand(SDMMC_CMD_SD_APP_OP_COND, arg);
 
     uint8_t r = waitForR1();
@@ -281,7 +281,7 @@ bool SPIDriver::cmd58_readCCS()
 
     // response is OCR register
     uint32_t ocr = waitForR3R7();
-    printf("OCR = %08lx\n", ocr);
+    if(getVerboseLevel()) printf("OCR = %08lx\n", ocr);
 
     // Bit 30 contains Card Capacity Status (CCS) - true if the card is an SDHC or SDXC
     return ocr & (1 << 30);
@@ -290,7 +290,7 @@ bool SPIDriver::cmd58_readCCS()
 void SPIDriver::cmd2_getCID()
 {
     // CMD10 is the command to get CID
-    printf("Sending CMD10 to get CID\n");
+    if(getVerboseLevel()) printf("Sending CMD10 to get CID\n");
     sendCommand(10, 0);
     waitForR1();
 
@@ -299,7 +299,7 @@ void SPIDriver::cmd2_getCID()
     readData(cid, 16);
 
     // Parse and print the response
-    printCID(cid);
+    if(getVerboseLevel()) printCID(cid);
 }
 
 uint16_t SPIDriver::cmd3_getRCA()
@@ -315,7 +315,7 @@ void SPIDriver::cmd7_selectCard(uint16_t)
 
 void SPIDriver::cmd9_getCSD(uint16_t rca)
 {
-    printf("Sending CMD9 to get CSD\n");
+    if(getVerboseLevel()) printf("Sending CMD9 to get CSD\n");
     sendCommand(9, 0);
     waitForR1();
 
@@ -324,7 +324,7 @@ void SPIDriver::cmd9_getCSD(uint16_t rca)
     readData(csd, 16);
 
     // Parse the response
-    printCSD(csd);
+    if(getVerboseLevel()) printCSD(csd);
 }
 
 void SPIDriver::cmd10_getCID(uint16_t rca)

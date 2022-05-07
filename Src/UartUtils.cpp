@@ -5,6 +5,11 @@
 
 #include "UartUtils.h"
 
+namespace
+{
+    bool verboseLevel = false;
+}
+
 // Pin constants
 static GPIO_TypeDef * const		TX_PIN_PORT		= GPIOA;
 static const uint32_t			TX_PIN_NUM		= LL_GPIO_PIN_9;
@@ -89,4 +94,14 @@ void readLine(char * buf, size_t size)
 
     *ptr = '\0';
     return;
+}
+
+void setVerboseLevel(bool verbose)
+{
+    verboseLevel = verbose;
+}
+
+bool getVerboseLevel()
+{
+    return verboseLevel;
 }

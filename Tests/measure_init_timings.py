@@ -115,6 +115,7 @@ def printMeasurement(headline, values):
 
 
 count = 20
+sd.setVerbose(False)
 
 # SPI initialization does not work without SDIO (for some reason)
 sd.init("SDIO", 178)

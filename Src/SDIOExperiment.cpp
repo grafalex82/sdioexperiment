@@ -65,6 +65,15 @@ void cmdLoopback(const char * argument)
         printf("%s\n", argument);
 }
 
+void cmdVerbose(const char * argument)
+{
+    // The argument is verbosity level (0 or 1)
+    int verbose = atoi(argument);
+    setVerboseLevel(verbose);
+    printf("OK\n");
+}
+
+
 void reinitDriver(IDriver * newDriver, int prescaler)
 {
     driver->deinit();
@@ -110,7 +119,8 @@ void cmd0_goIdleState(const char *)
 void cmd8_sendInterfaceConditions(const char *)
 {
     bool v2card = driver->cmd8_sendInterfaceConditions();
-    printf("Card version - %d\n", v2card ? 2 : 1);
+    if(getVerboseLevel())
+        printf("Card version - %d\n", v2card ? 2 : 1);
     printf("OK %d\n", v2card ? 2 : 1);
 }
 
@@ -179,6 +189,7 @@ struct CommandEntry
 
 CommandEntry commandHandlers[] = {
     {"LOOPBACK",    cmdLoopback},
+    {"VERBOSE",     cmdVerbose},
     {"SPI_INIT",    cmdSpiInit},
     {"SDIO_INIT",   cmdSdioInit},
     {"RESET",       cmdReset},

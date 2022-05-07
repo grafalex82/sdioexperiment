@@ -19,6 +19,7 @@ class SdProtocol:
         self.port = serial.Serial('COM6', baudrate=115200)
         self.tstart = 0
         self.tend = 0
+        self.verbose = False
 
 
     def sendCommand(self, cmd):
@@ -27,7 +28,8 @@ class SdProtocol:
         log = ""
         while True:
             line = self.port.readline().decode().rstrip()
-            print("Received: " + line)
+            if self.verbose:
+                print("Received: " + line)
 
             # Wait and parse status line
             m = STATUS_LINE_RE.match(line)
@@ -43,7 +45,8 @@ class SdProtocol:
 
             # Wait for TIMESTATS
             line = self.port.readline().decode().rstrip()
-            print("Received: " + line)
+            if self.verbose:
+                print("Received: " + line)
             m = TIMESTATS_LINE_RE.match(line)
             if not m:
                 raise RuntimeError("Expecting TIMESTATS line")
@@ -78,9 +81,10 @@ class SdProtocol:
     
     def cmd8(self):
         response = self.sendCommand("CMD8")
-        assert("R7 = 000001aa" in response.log              # Normal R7 response
-               or "R1 = 05" in response.log                 # CMD8 will return illegal command in SPI mode for v1 cards
-               or "error code: 00000004" in response.log)   # CMD8 will timeout in SDIO mode for v1 cards
+        if self.verbose:
+            assert("R7 = 000001aa" in response.log              # Normal R7 response
+                   or "R1 = 05" in response.log                 # CMD8 will return illegal command in SPI mode for v1 cards
+                   or "error code: 00000004" in response.log)   # CMD8 will timeout in SDIO mode for v1 cards
 
         # The value contains version of the card (1 or 2)
         v2card = response.value 
@@ -119,3 +123,7 @@ class SdProtocol:
 
     def getElapsedTime(self):
         return self.tend - self.tstart
+
+    def setVerbose(self, verbose):
+        self.verbose = verbose
+        self.sendCommand("VERBOSE " + ("1" if verbose else "0"))

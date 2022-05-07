@@ -1,5 +1,6 @@
 #include "SDIODriver.h"
 #include "DumpFunctions.h"
+#include "UartUtils.h"
 
 #include <stm32f1xx_ll_bus.h>
 #include <stm32f1xx_ll_gpio.h>
@@ -59,7 +60,8 @@ void SDIODriver::init(unsigned int prescaler)
     LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_SDIO);
 
     // Initialize SDIO at <=400kHz first
-    printf("Configuring SDIO with prescaler %d (freq=%dkHz)\n", prescaler, 72000/(prescaler+2));
+    if(getVerboseLevel())
+        printf("Configuring SDIO with prescaler %d (freq=%dkHz)\n", prescaler, 72000/(prescaler+2));
     SDIO_InitTypeDef initStruct;
     initStruct.ClockEdge = SDIO_CLOCK_EDGE_RISING;
     initStruct.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
@@ -105,16 +107,16 @@ void SDIODriver::reset()
 void SDIODriver::cmd0_goIdleState()
 {
     uint32_t r = SDMMC_CmdGoIdleState(SDIO);
-    printf("CMD0 error code: %08lx\n", r);
+    if(getVerboseLevel()) printf("CMD0 error code: %08lx\n", r);
 }
 
 bool SDIODriver::cmd8_sendInterfaceConditions()
 {
     uint32_t r = SDMMC_CmdOperCond(SDIO);
-    printf("CMD8 error code: %08lx\n", r);
+    if(getVerboseLevel()) printf("CMD8 error code: %08lx\n", r);
 
     uint32_t r7 = SDIO_GetResponse(SDIO, SDIO_RESP1);
-    printf("R7 = %08lx\n", r7);
+    if(getVerboseLevel()) printf("R7 = %08lx\n", r7);
 
     return r == SDMMC_ERROR_NONE && r7 == 0x1aa;
 }
@@ -122,17 +124,17 @@ bool SDIODriver::cmd8_sendInterfaceConditions()
 void SDIODriver::cmd55_sendAppCommand()
 {
     uint32_t r = SDMMC_CmdAppCommand(SDIO, 0);
-    printf("CMD55 error code: %08lx\n", r);
+    if(getVerboseLevel()) printf("CMD55 error code: %08lx\n", r);
 }
 
 bool SDIODriver::acmd41_sendAppOpConditions(bool hostSupportSdhc)
 {
     // send our capability of handling SDHC cards
     uint32_t r = SDMMC_CmdAppOperCommand(SDIO, hostSupportSdhc ? SDMMC_HIGH_CAPACITY : SDMMC_STD_CAPACITY);
-    printf("ACMD41 error code: %08lx\n", r);
+    if(getVerboseLevel()) printf("ACMD41 error code: %08lx\n", r);
 
     r = SDIO_GetResponse(SDIO, SDIO_RESP1);
-    printf("ACMD41 response: %08lx\n", r);
+    if(getVerboseLevel()) printf("ACMD41 response: %08lx\n", r);
 
     return r >> 31; //31 bit is valid status (if low - card is still busy initializing)
 }
@@ -142,7 +144,7 @@ bool SDIODriver::cmd58_readCCS()
     // Little hack: if executed right after acmd41_sendAppOpConditions()
     // response register still contains Operations Conditions Register (OCR)
     uint32_t ocr = SDIO_GetResponse(SDIO, SDIO_RESP1);
-    printf("Hack: catching OCR from previously executed ACMD41. OCR = %08lx\n", ocr);
+    if(getVerboseLevel()) printf("Hack: catching OCR from previously executed ACMD41. OCR = %08lx\n", ocr);
 
     // Bit 30 contains Card Capacity Status (CCS) - true if the card is an SDHC or SDXC
     return ocr & (1<<30);
@@ -152,43 +154,43 @@ void SDIODriver::cmd2_getCID()
 {
     // Send the commsnd
     uint32_t r = SDMMC_CmdSendCID(SDIO);
-    printf("CMD2 error code: %08lx\n", r);
+    if(getVerboseLevel()) printf("CMD2 error code: %08lx\n", r);
 
     // Get the 128-bit response
     uint8_t resp[16];
     get128BitResponse(resp);
 
     // Print the result
-    printCID(resp);
+    if(getVerboseLevel()) printCID(resp);
 }
 
 uint16_t SDIODriver::cmd3_getRCA()
 {
     uint16_t rca;
     uint32_t r = SDMMC_CmdSetRelAdd(SDIO, &rca);
-    printf("CMD3 response %08lx. RCA=%04x\n", r, rca);
+    if(getVerboseLevel()) printf("CMD3 response %08lx. RCA=%04x\n", r, rca);
     return rca;
 }
 
 void SDIODriver::cmd7_selectCard(uint16_t rca)
 {
     uint32_t r = SDMMC_CmdSelDesel(SDIO, rca << 16);
-    printf("CMD7 response %08lx\n", r);
+    if(getVerboseLevel()) printf("CMD7 response %08lx\n", r);
 }
 
 void SDIODriver::cmd9_getCSD(uint16_t rca)
 {
     // Send the commsnd
-    printf("Sending CMD9 with RCA=%04x\n", rca);
+    if(getVerboseLevel()) printf("Sending CMD9 with RCA=%04x\n", rca);
     uint32_t r = SDMMC_CmdSendCSD(SDIO, rca << 16);
-    printf("CMD9 error code: %08lx\n", r);
+    if(getVerboseLevel()) printf("CMD9 error code: %08lx\n", r);
 
     // Get the 128-bit response
     uint8_t csd[16];
     get128BitResponse(csd);
 
     // Parse the response
-    printCSD(csd);
+    if(getVerboseLevel()) printCSD(csd);
 }
 
 void SDIODriver::cmd10_getCID(uint16_t rca)
