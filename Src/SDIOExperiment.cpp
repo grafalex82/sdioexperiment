@@ -200,9 +200,9 @@ void cmdInitCard(const char * argument)
         if(valid)
             break;
 
-        if(retries > 20)
+        if(HAL_GetTick() - tstart > 1000)
         {
-            printf("ERROR Card busy\n");
+            printf("ERROR Card busy after %d retries\n", retries);
             return;
         }
     }

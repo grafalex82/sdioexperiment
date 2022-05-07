@@ -171,6 +171,7 @@ count = 20
 sd.setVerbose(False)
 
 # SPI initialization does not work without SDIO (for some reason)
+print("Run SDIO tests")
 sd.init("SDIO", 178)
 sd.reset()
 sd.cmd0()
@@ -182,6 +183,7 @@ runMeasurement("Native init sequence, SDIO Mode", measureNativeInitTime, count)
 runMeasurement("Native Busy time, SDIO Mode", measureNativeBusyTime, count)
 runMeasurement("Native Number of retries, SDIO Mode", measureNativeRetries, count)
 
+print("Run SPI tests")
 sd.init("SPI", 256)
 runMeasurement("Full init sequence, SPI Mode", measureFullInitTimeSPI, count)
 runMeasurement("Busy time, SPI Mode", measureBusyTimeSPI, count)
