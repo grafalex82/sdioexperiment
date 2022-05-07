@@ -181,6 +181,42 @@ void cmd10_getCID(const char * argument)
     printf("OK\n");
 }
 
+void cmdInitCard(const char * argument)
+{
+    // Perform full init sequence for a card
+    driver->reset();
+    driver->cmd0_goIdleState();
+    bool v2card = driver->cmd8_sendInterfaceConditions();
+
+    driver->cmd58_readCCS();
+
+    uint32_t tstart = HAL_GetTick();
+
+    int retries = 0;
+    for(;; retries++)
+    {
+        driver->cmd55_sendAppCommand();
+        bool valid = driver->acmd41_sendAppOpConditions(v2card);
+        if(valid)
+            break;
+
+        if(retries > 20)
+        {
+            printf("ERROR Card busy\n");
+            return;
+        }
+    }
+
+    driver->cmd58_readCCS();
+
+    uint32_t tend = HAL_GetTick();
+
+    driver->cmd2_getCID();
+    driver->cmd3_getRCA();
+
+    printf("OK %d %d\n", tend-tstart, retries);
+}
+
 struct CommandEntry
 {
     const char * command;
@@ -202,7 +238,8 @@ CommandEntry commandHandlers[] = {
     {"CMD3",        cmd3_getRCA},
     {"CMD7",        cmd7_selectCard},
     {"CMD9",        cmd9_getCSD},
-    {"CMD10",       cmd10_getCID}
+    {"CMD10",       cmd10_getCID},
+    {"INIT_CARD",   cmdInitCard}
 };
 
 void parseCommand(const char * buf)
