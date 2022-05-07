@@ -24,6 +24,7 @@ class SD:
             # Wait and parse status line
             m = STATUS_LINE_RE.match(line)
             if not m:
+                response += line + "\n"
                 continue
 
             status = m.group(1)
@@ -46,7 +47,6 @@ class SD:
             if status == "ERROR":
                 raise RuntimeError(argument)
 
-            response += line + "\n"
 
 
     def init(self, mode, prescaler):
@@ -60,7 +60,9 @@ class SD:
     
     def cmd8(self):
         v2card, response = self.sendCommand("CMD8")
-        assert("R7 = 000001aa" in response or "R1 = 05" in response)
+        assert("R7 = 000001aa" in response
+               or "R1 = 05" in response
+               or "error code: 00000004" in response)
         return int(v2card)
 
     def acmd41(self, hostSupportsSDHC):
@@ -139,7 +141,6 @@ def test_sdio_init(sd):
 
 #    sd.cmd7(rca)
 #    sd.cmd7(0)
-    assert(False)
 
 
 def test_spi_init(sd):
@@ -168,5 +169,4 @@ def test_spi_init(sd):
 
     sd.cmd2()
     sd.cmd9(0)
-    assert(False)
 
