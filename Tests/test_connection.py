@@ -3,6 +3,10 @@
 
 import pytest
 import serial
+import re
+
+STATUS_LINE_RE = re.compile(r"(OK|ERROR) ?(.*)")
+TIMESTATS_LINE_RE = re.compile(r"TIMESTATS (\d+) (\d+) \((\d+)\)")
 
 class SD:
     def __init__(self):
@@ -17,10 +21,24 @@ class SD:
             line = self.port.readline().decode().rstrip()
             print("Received: " + line)
 
-            if not line:
+            # Wait and parse status line
+            m = STATUS_LINE_RE.match(line)
+            if not m:
                 continue
 
-            status, argument = line.split(' ', 1) if ' ' in line else (line, None)
+            status = m.group(1)
+            argument = m.group(2)
+
+            # Wait for TIMESTATS
+            line = self.port.readline().decode().rstrip()
+            print("Received: " + line)
+            m = TIMESTATS_LINE_RE.match(line)
+            if not m:
+                raise RuntimeError("Expecting TIMESTATS line")
+
+            tstart = m.group(1)
+            tend = m.group(2)
+            tdelta = m.group(3)
 
             if status == "OK":
                 return argument, response

@@ -215,14 +215,23 @@ void parseCommand(const char * buf)
     {
         if(!strncmp(commandHandlers[i].command, buf, cmdLen))
         {
+            uint32_t tstart = HAL_GetTick();
             commandHandlers[i].handler(ptr);
+            uint32_t tend = HAL_GetTick();
+
+            printf("TIMESTATS %u %u (%u)\n", tstart, tend, tend - tstart);
+
             handled = true;
             break;
         }
     }
 
     if(!handled)
+    {
         printf("ERROR Unknown command: %s\n", buf);
+        uint32_t tnow = HAL_GetTick();
+        printf("TIMESTATS %u %u (0)\n", tnow, tnow);
+    }
 }
 
 int main(void)
