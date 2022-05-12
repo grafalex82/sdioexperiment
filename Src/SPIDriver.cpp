@@ -329,5 +329,5 @@ void SPIDriver::cmd9_getCSD(uint16_t rca)
 
 void SPIDriver::cmd10_getCID(uint16_t rca)
 {
-    // TODO
+    cmd2_getCID();
 }
