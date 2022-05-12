@@ -96,8 +96,6 @@ def measureBusyTimeSPI():
     sd.cmd0()
     cardver = sd.cmd8()
 
-    sd.cmd58() #TODO Check if this is really needed
-
     sd.resetTimer()
 
     status = "Busy"
@@ -122,8 +120,6 @@ def measureFullInitTimeSPI():
     sd.cmd0()
     cardver = sd.cmd8()
 
-    sd.cmd58() #TODO Check if this is really needed
-
     status = "Busy"
     retries = 0
     while status == "Busy":
@@ -142,8 +138,6 @@ def measureNumRetriesSPI():
     sd.reset()
     sd.cmd0()
     cardver = sd.cmd8()
-
-    sd.cmd58() #TODO Check if this is really needed
 
     status = "Busy"
     retries = 0
@@ -190,5 +184,5 @@ runMeasurement("Busy time, SPI Mode", measureBusyTimeSPI, count)
 runMeasurement("Number of retries, SPI Mode", measureNumRetriesSPI, count)
 runMeasurement("Native init sequence, SPI Mode", measureNativeInitTime, count)
 runMeasurement("Native Busy time, SPI Mode", measureNativeBusyTime, count)
-runMeasurement("Native Number of retries, SDIO Mode", measureNativeRetries, count)
+runMeasurement("Native Number of retries, SPI Mode", measureNativeRetries, count)
 
