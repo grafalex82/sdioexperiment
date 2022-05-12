@@ -298,19 +298,4 @@ int main(void)
         readLine(buf, 80);
         parseCommand(buf);
     }
-
-//    SDCard card;
-
-//    while(true)
-//    {
-//        LL_GPIO_ResetOutputPin(LED1_PORT, LED1_PIN);
-//        HAL_Delay(500);
-//        LL_GPIO_SetOutputPin(LED1_PORT, LED1_PIN);
-
-//        printf("Initialize card\n");
-//        card.init();
-//        printf("Card initialized successfully\n");
-
-//        HAL_Delay(2000);
-//    }
 }
