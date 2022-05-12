@@ -187,6 +187,8 @@ void cmdInitCard(const char * argument)
     driver->reset();
     driver->cmd0_goIdleState();
     bool v2card = driver->cmd8_sendInterfaceConditions();
+    if(!v2card)
+        driver->cmd0_goIdleState();
 
     driver->cmd58_readCCS();
 
