@@ -152,7 +152,7 @@ bool SDIODriver::cmd58_readCCS()
 
 void SDIODriver::cmd2_getCID()
 {
-    // Send the commsnd
+    // Send the command
     uint32_t r = SDMMC_CmdSendCID(SDIO);
     if(getVerboseLevel()) printf("CMD2 error code: %08lx\n", r);
 
