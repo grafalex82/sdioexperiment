@@ -216,7 +216,7 @@ void cmdInitCard(const char * argument)
     driver->cmd2_getCID();
     driver->cmd3_getRCA();
 
-    printf("OK %d %d\n", tend-tstart, retries);
+    printf("OK %lu %d\n", tend-tstart, retries);
 }
 
 struct CommandEntry
@@ -269,7 +269,7 @@ void parseCommand(const char * buf)
             commandHandlers[i].handler(ptr);
             uint32_t tend = HAL_GetTick();
 
-            printf("TIMESTATS %u %u (%u)\n", tstart, tend, tend - tstart);
+            printf("TIMESTATS %lu %lu (%lu)\n", tstart, tend, tend - tstart);
 
             handled = true;
             break;
@@ -280,7 +280,7 @@ void parseCommand(const char * buf)
     {
         printf("ERROR Unknown command: %s\n", buf);
         uint32_t tnow = HAL_GetTick();
-        printf("TIMESTATS %u %u (0)\n", tnow, tnow);
+        printf("TIMESTATS %lu %lu (0)\n", tnow, tnow);
     }
 }
 
