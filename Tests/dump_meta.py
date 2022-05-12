@@ -4,17 +4,19 @@ from protocol import SdProtocol
 
 sd = SdProtocol()
 
+sd.setVerbose(True)
+
 # SPI initialization does not work without SDIO (for some reason)
 sd.init("SDIO", 178)
 sd.reset()
 sd.cmd0()
 
-sd.init("SPI", 256)
-sd.reset()
-sd.cmd0()
+# sd.init("SPI", 256)
+# sd.reset()
+# sd.cmd0()
 cardver = sd.cmd8()
-
-sd.cmd58() #TODO Check if this is really needed
+if cardver == 1:
+    sd.cmd0();
 
 status = "Busy"
 retries = 0
@@ -27,7 +29,8 @@ assert(status == "Valid")
 sdhc = sd.cmd58()
 
 cid = sd.cmd2()
-csd = sd.cmd9(0)
+rca = sd.cmd3()
+csd = sd.cmd9(rca)
 
 
 print(cid)
