@@ -178,20 +178,23 @@ sd.setVerbose(False)
 
 # SPI initialization does not work without SDIO (for some reason)
 print("Run SDIO tests")
-sd.init("SDIO", 122)
-sd.reset()
-sd.cmd0()
+for prescaler in [238, 118, 94, 46, 6, 2, 0]:
+    freq = 48000 / (prescaler + 2)
+    print(f"Running SDIO at {freq} kHz")
+    sd.init("SDIO", prescaler)
+    sd.reset()
+    sd.cmd0()
 
-runMeasurement("Full init sequence, SDIO Mode", measureFullInitTimeSDIO, count)
-runMeasurement("Busy time, SDIO Mode", measureBusyTimeSDIO, count)
-runMeasurement("Number of retries, SDIO Mode", measureNumRetriesSDIO, count)
-runMeasurement("Native init sequence, SDIO Mode", measureNativeInitTime, count)
-runMeasurement("Native Busy time, SDIO Mode", measureNativeBusyTime, count)
-runMeasurement("Native Number of retries, SDIO Mode", measureNativeRetries, count)
+    runMeasurement("Full init sequence, SDIO Mode", measureFullInitTimeSDIO, count)
+    runMeasurement("Busy time, SDIO Mode", measureBusyTimeSDIO, count)
+    runMeasurement("Number of retries, SDIO Mode", measureNumRetriesSDIO, count)
+    runMeasurement("Native init sequence, SDIO Mode", measureNativeInitTime, count)
+    runMeasurement("Native Busy time, SDIO Mode", measureNativeBusyTime, count)
+    runMeasurement("Native Number of retries, SDIO Mode", measureNativeRetries, count)
 
 print("Run SPI tests")
 
-for i in range(8):
+for i in range(1, 8):
     div = 7-i
     freq = 24000 >> div
     print(f"Running SPI at {freq} kHz")
