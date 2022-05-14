@@ -67,7 +67,7 @@ SET(HAL_SRC
 #	STM32F1/HAL_Inc/stm32f1xx_ll_i2c.h
 #	STM32F1/HAL_Inc/stm32f1xx_ll_iwdg.h
 #	STM32F1/HAL_Inc/stm32f1xx_ll_pwr.h
-#	STM32F1/HAL_Inc/stm32f1xx_ll_rcc.h
+	STM32F1/HAL_Inc/stm32f1xx_ll_rcc.h
 #	STM32F1/HAL_Inc/stm32f1xx_ll_rtc.h
 	STM32F1/HAL_Inc/stm32f1xx_ll_sdmmc.h
 #	STM32F1/HAL_Inc/stm32f1xx_ll_spi.h
@@ -75,7 +75,7 @@ SET(HAL_SRC
 #	STM32F1/HAL_Inc/stm32f1xx_ll_tim.h
 #	STM32F1/HAL_Inc/stm32f1xx_ll_usart.h
 #	STM32F1/HAL_Inc/stm32f1xx_ll_usb.h
-#	STM32F1/HAL_Inc/stm32f1xx_ll_utils.h
+	STM32F1/HAL_Inc/stm32f1xx_ll_utils.h
 #	STM32F1/HAL_Inc/stm32f1xx_ll_wwdg.h
 
 
@@ -132,14 +132,14 @@ SET(HAL_SRC
 #	STM32F1/HAL_Src/stm32f1xx_ll_gpio.c
 #	STM32F1/HAL_Src/stm32f1xx_ll_i2c.c
 #	STM32F1/HAL_Src/stm32f1xx_ll_pwr.c
-#	STM32F1/HAL_Src/stm32f1xx_ll_rcc.c
+	STM32F1/HAL_Src/stm32f1xx_ll_rcc.c
 #	STM32F1/HAL_Src/stm32f1xx_ll_rtc.c
 	STM32F1/HAL_Src/stm32f1xx_ll_sdmmc.c
 #	STM32F1/HAL_Src/stm32f1xx_ll_spi.c
 #	STM32F1/HAL_Src/stm32f1xx_ll_tim.c
 #	STM32F1/HAL_Src/stm32f1xx_ll_usart.c
 #	STM32F1/HAL_Src/stm32f1xx_ll_usb.c
-#	STM32F1/HAL_Src/stm32f1xx_ll_utils.c
+	STM32F1/HAL_Src/stm32f1xx_ll_utils.c
 	STM32F1/HAL_Src/system_stm32f1xx.c
 )
 

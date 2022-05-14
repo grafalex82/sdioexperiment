@@ -19,7 +19,8 @@ ADD_DEFINITIONS(
 	-DSTM32F1
 	-DSTM32F103RC
 	-DSTM32F103xE # That is correct, all chips (F103xC, F103xD, and F103xE) have code under this define
-	-DF_CPU=72000000L
+	-DUSE_FULL_LL_DRIVER
+	-DF_CPU=48000000L
 )
 
 # Project wide include directories

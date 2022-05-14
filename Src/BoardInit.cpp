@@ -1,5 +1,8 @@
 #include <stm32f1xx_hal.h>
 #include <stm32f1xx_ll_bus.h>
+#include <stm32f1xx_ll_rcc.h>
+#include <stm32f1xx_ll_utils.h>
+#include <stm32f1xx_ll_cortex.h>
 
 #include <stm32f1xx_hal_rcc.h>
 #include <stm32f1xx_hal_rcc_ex.h>
@@ -45,11 +48,23 @@ void initClock(void)
     HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
 }
 
+void initSysTick()
+{
+    LL_RCC_ClocksTypeDef clocks;
+    LL_RCC_GetSystemClocksFreq(&clocks);
+
+    // Run SysTick timer at 10kHz frequency
+    LL_InitTick(clocks.SYSCLK_Frequency, 10000);
+
+    LL_SYSTICK_EnableIT();
+}
+
 void initBoard()
 {
     // Initialize board and HAL
     HAL_Init();
     initClock();
+    initSysTick();
     initUART();
 }
 
