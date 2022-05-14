@@ -16,7 +16,7 @@
 
 namespace {
     volatile uint32_t tick;
-    const uint32_t SYS_TICK_FREQ = 50000;
+    const uint32_t SYS_TICK_FREQ = 100000;
 }
 
 // Set up board clocks
