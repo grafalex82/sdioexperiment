@@ -3,6 +3,7 @@
 #include <stm32f1xx_ll_rcc.h>
 #include <stm32f1xx_ll_utils.h>
 #include <stm32f1xx_ll_cortex.h>
+#include <stm32f1xx_ll_gpio.h>
 
 #include <stm32f1xx_hal_rcc.h>
 #include <stm32f1xx_hal_rcc_ex.h>
@@ -11,6 +12,12 @@
 
 #include "BoardInit.h"
 #include "UartUtils.h"
+
+
+namespace {
+    volatile uint32_t tick;
+    const uint32_t SYS_TICK_FREQ = 50000;
+}
 
 // Set up board clocks
 void initClock(void)
@@ -54,7 +61,9 @@ void initSysTick()
     LL_RCC_GetSystemClocksFreq(&clocks);
 
     // Run SysTick timer at 10kHz frequency
-    LL_InitTick(clocks.SYSCLK_Frequency, 10000);
+    LL_InitTick(clocks.SYSCLK_Frequency, SYS_TICK_FREQ);
+
+    tick = 0;
 
     LL_SYSTICK_EnableIT();
 }
@@ -68,10 +77,32 @@ void initBoard()
     initUART();
 }
 
+void delayMs(uint32_t ms)
+{
+    uint32_t tstart = getTick();
+    uint32_t tend = tstart + ms * SYS_TICK_FREQ / 1000;
+    while(getTick() < tend)
+        ;
+}
+
+void delayUs(uint32_t us)
+{
+    uint32_t tstart = getTick();
+    uint32_t tend = tstart + us * SYS_TICK_FREQ / 1000000;
+
+    while(getTick() < tend)
+        ;
+}
+
+uint32_t getTick()
+{
+    return tick;
+}
+
+
 extern "C"
 void SysTick_Handler(void) {
-    HAL_IncTick();
-    HAL_SYSTICK_IRQHandler();
+    tick++;
 }
 
 extern "C"
