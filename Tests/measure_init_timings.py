@@ -3,6 +3,8 @@
 from protocol import SdProtocol
 from statistics import mean, median
 
+tickFreq = 100 # kHz
+
 sd = SdProtocol()
 
 def measureFullInitTimeSDIO():
@@ -28,7 +30,7 @@ def measureFullInitTimeSDIO():
     sd.cmd3()
 
     duration = sd.getElapsedTime()
-    return duration
+    return duration / tickFreq
 
 
 def measureBusyTimeSDIO():
@@ -55,7 +57,7 @@ def measureBusyTimeSDIO():
     sd.cmd2()
     sd.cmd3()
 
-    return duration
+    return duration / tickFreq
 
 
 def measureNumRetriesSDIO():
@@ -83,18 +85,17 @@ def measureNumRetriesSDIO():
 
 def measureNativeInitTime():
     resp = sd.sendCommand("INIT_CARD")
-    return resp.tdelta
+    return resp.tdelta / tickFreq
 
 
 def measureNativeBusyTime():
     resp = sd.sendCommand("INIT_CARD")
-    return int(resp.value.split(' ')[0])
+    return int(resp.value.split(' ')[0]) / tickFreq
 
 
 def measureNativeRetries():
     resp = sd.sendCommand("INIT_CARD")
     return int(resp.value.split(' ')[1])
-
 
 
 def measureBusyTimeSPI():
@@ -118,7 +119,7 @@ def measureBusyTimeSPI():
 
     duration = sd.getElapsedTime()
     
-    return duration
+    return duration / tickFreq
 
 
 def measureFullInitTimeSPI():
@@ -141,7 +142,7 @@ def measureFullInitTimeSPI():
 
     sdhc = sd.cmd58()
 
-    return duration
+    return duration / tickFreq
 
 
 def measureNumRetriesSPI():
@@ -170,7 +171,7 @@ def runMeasurement(headline, fn, count):
     avgValue = median(values)
     minValue = min(values)
     maxValue = max(values)
-    print(f"{headline}: {avgValue} ({minValue} - {maxValue})");
+    print(f"{headline}: {avgValue:.2f} ({minValue:.2f} - {maxValue:.2f})");
 
 
 count = 20
