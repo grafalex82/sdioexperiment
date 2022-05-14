@@ -70,7 +70,7 @@ void SPIDriver::init(unsigned int prescaler)
     LL_SPI_SetMode(SPI1, LL_SPI_MODE_MASTER);
     LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
     LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
-    LL_SPI_SetBaudRatePrescaler(SPI1, div);
+    LL_SPI_SetBaudRatePrescaler(SPI1, div << SPI_CR1_BR_Pos);
     LL_SPI_SetTransferBitOrder(SPI1, LL_SPI_MSB_FIRST);
     LL_SPI_SetTransferDirection(SPI1, LL_SPI_FULL_DUPLEX);
     LL_SPI_SetDataWidth(SPI1, LL_SPI_DATAWIDTH_8BIT);
