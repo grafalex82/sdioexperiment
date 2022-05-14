@@ -1,10 +1,10 @@
 #include "SDCard.h"
+#include "BoardInit.h"
 
 #include <stdio.h>
 
 #include <stm32f1xx_ll_bus.h>
 #include <stm32f1xx_ll_gpio.h>
-#include <stm32f1xx_hal.h>
 
 
 static GPIO_TypeDef * const		ENABLE_PIN_PORT		= GPIOA;
@@ -27,7 +27,7 @@ void cardPowerUp()
     LL_GPIO_ResetOutputPin(ENABLE_PIN_PORT, ENABLE_PIN_NUM);
 
     // And wait at least 1ms
-    HAL_Delay(1);
+    delayMs(1);
 }
 
 
@@ -39,7 +39,7 @@ void cardPowerDown()
 void cardPowerCycle()
 {
     cardPowerDown();
-    HAL_Delay(250);
+    delayMs(250);
     cardPowerUp();
 }
 

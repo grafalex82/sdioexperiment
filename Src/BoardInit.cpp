@@ -99,6 +99,10 @@ uint32_t getTick()
     return tick;
 }
 
+uint32_t getTickFreq()
+{
+    return SYS_TICK_FREQ;
+}
 
 extern "C"
 void SysTick_Handler(void) {

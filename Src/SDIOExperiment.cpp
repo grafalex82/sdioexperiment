@@ -4,7 +4,6 @@
 #include <stm32f1xx_ll_gpio.h>
 #include <stm32f1xx_ll_usart.h>
 #include <stm32f1xx_ll_bus.h>
-#include <stm32f1xx_hal.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -192,7 +191,7 @@ void cmdInitCard(const char * argument)
 
     driver->cmd58_readCCS();
 
-    uint32_t tstart = HAL_GetTick();
+    uint32_t tstart = getTick();
 
     int retries = 0;
     for(;; retries++)
@@ -202,7 +201,7 @@ void cmdInitCard(const char * argument)
         if(valid)
             break;
 
-        if(HAL_GetTick() - tstart > 1000)
+        if(getTick() - tstart > getTickFreq()) // timeout - 1s
         {
             printf("ERROR Card busy after %d retries\n", retries);
             return;
@@ -211,7 +210,7 @@ void cmdInitCard(const char * argument)
 
     driver->cmd58_readCCS();
 
-    uint32_t tend = HAL_GetTick();
+    uint32_t tend = getTick();
 
     driver->cmd2_getCID();
     driver->cmd3_getRCA();
@@ -265,9 +264,9 @@ void parseCommand(const char * buf)
     {
         if(!strncmp(commandHandlers[i].command, buf, cmdLen))
         {
-            uint32_t tstart = HAL_GetTick();
+            uint32_t tstart = getTick();
             commandHandlers[i].handler(ptr);
-            uint32_t tend = HAL_GetTick();
+            uint32_t tend = getTick();
 
             printf("TIMESTATS %lu %lu (%lu)\n", tstart, tend, tend - tstart);
 
@@ -279,7 +278,7 @@ void parseCommand(const char * buf)
     if(!handled)
     {
         printf("ERROR Unknown command: %s\n", buf);
-        uint32_t tnow = HAL_GetTick();
+        uint32_t tnow = getTick();
         printf("TIMESTATS %lu %lu (0)\n", tnow, tnow);
     }
 }
@@ -289,7 +288,7 @@ int main(void)
     initBoard();
     initLEDs();
 
-    HAL_Delay(500);
+    delayMs(500);
     printf("============== Let the experiment begin ==============\n");
 
     while(true)
