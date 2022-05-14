@@ -7,7 +7,7 @@ sd = SdProtocol()
 sd.setVerbose(True)
 
 # SPI initialization does not work without SDIO (for some reason)
-sd.init("SDIO", 112)
+sd.init("SDIO", 118)
 sd.reset()
 sd.cmd0()
 
