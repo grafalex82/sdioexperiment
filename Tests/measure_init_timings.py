@@ -190,11 +190,20 @@ runMeasurement("Native Busy time, SDIO Mode", measureNativeBusyTime, count)
 runMeasurement("Native Number of retries, SDIO Mode", measureNativeRetries, count)
 
 print("Run SPI tests")
-sd.init("SPI", 256)
-runMeasurement("Full init sequence, SPI Mode", measureFullInitTimeSPI, count)
-runMeasurement("Busy time, SPI Mode", measureBusyTimeSPI, count)
-runMeasurement("Number of retries, SPI Mode", measureNumRetriesSPI, count)
-runMeasurement("Native init sequence, SPI Mode", measureNativeInitTime, count)
-runMeasurement("Native Busy time, SPI Mode", measureNativeBusyTime, count)
-runMeasurement("Native Number of retries, SPI Mode", measureNativeRetries, count)
+
+for i in range(8):
+    div = 7-i
+    freq = 24000 >> div
+    print(f"Running SPI at {freq} kHz")
+
+    sd.init("SPI", 2 << div)
+    sd.reset()
+    sd.cmd0()
+    
+    runMeasurement("Full init sequence, SPI Mode", measureFullInitTimeSPI, count)
+    runMeasurement("Busy time, SPI Mode", measureBusyTimeSPI, count)
+    runMeasurement("Number of retries, SPI Mode", measureNumRetriesSPI, count)
+    runMeasurement("Native init sequence, SPI Mode", measureNativeInitTime, count)
+    runMeasurement("Native Busy time, SPI Mode", measureNativeBusyTime, count)
+    runMeasurement("Native Number of retries, SPI Mode", measureNativeRetries, count)
 
