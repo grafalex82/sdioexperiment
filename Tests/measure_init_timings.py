@@ -11,13 +11,15 @@ def measureFullInitTimeSDIO():
     sd.reset()
     sd.cmd0()
     cardver = sd.cmd8()
+    if cardver == 1:
+        sd.cmd0()
 
     status = "Busy"
     retries = 0
     while status == "Busy":
         status = sd.acmd41(cardver > 1)
         retries += 1
-        assert(retries < 20)
+        assert(retries < 50)
     assert(status == "Valid")
 
     sdhc = sd.cmd58()
@@ -33,6 +35,8 @@ def measureBusyTimeSDIO():
     sd.reset()
     sd.cmd0()
     cardver = sd.cmd8()
+    if cardver == 1:
+        sd.cmd0()
 
     sd.resetTimer()
 
@@ -41,7 +45,7 @@ def measureBusyTimeSDIO():
     while status == "Busy":
         status = sd.acmd41(cardver > 1)
         retries += 1
-        assert(retries < 20)
+        assert(retries < 50)
     assert(status == "Valid")
 
     sdhc = sd.cmd58()
@@ -58,13 +62,15 @@ def measureNumRetriesSDIO():
     sd.reset()
     sd.cmd0()
     cardver = sd.cmd8()
+    if cardver == 1:
+        sd.cmd0()
 
     status = "Busy"
     retries = 0
     while status == "Busy":
         status = sd.acmd41(cardver > 1)
         retries += 1
-        assert(retries < 20)
+        assert(retries < 50)
     assert(status == "Valid")
 
     sdhc = sd.cmd58()
@@ -95,6 +101,8 @@ def measureBusyTimeSPI():
     sd.reset()
     sd.cmd0()
     cardver = sd.cmd8()
+    if cardver == 1:
+        sd.cmd0()
 
     sd.resetTimer()
 
@@ -103,7 +111,7 @@ def measureBusyTimeSPI():
     while status == "Busy":
         status = sd.acmd41(cardver > 1)
         retries += 1
-        assert(retries < 20)
+        assert(retries < 50)
     assert(status == "Valid")
 
     sdhc = sd.cmd58()
@@ -119,13 +127,15 @@ def measureFullInitTimeSPI():
     sd.reset()
     sd.cmd0()
     cardver = sd.cmd8()
+    if cardver == 1:
+        sd.cmd0()
 
     status = "Busy"
     retries = 0
     while status == "Busy":
         status = sd.acmd41(cardver > 1)
         retries += 1
-        assert(retries < 20)
+        assert(retries < 50)
     assert(status == "Valid")
     duration = sd.getElapsedTime()
 
@@ -138,13 +148,15 @@ def measureNumRetriesSPI():
     sd.reset()
     sd.cmd0()
     cardver = sd.cmd8()
+    if cardver == 1:
+        sd.cmd0()
 
     status = "Busy"
     retries = 0
     while status == "Busy":
         status = sd.acmd41(cardver > 1)
         retries += 1
-        assert(retries < 20)
+        assert(retries < 50)
     assert(status == "Valid")
 
     sdhc = sd.cmd58()
