@@ -61,7 +61,7 @@ void SDIODriver::init(unsigned int prescaler)
 
     // Initialize SDIO at <=400kHz first
     if(getVerboseLevel())
-        printf("Configuring SDIO with prescaler %d (freq=%dkHz)\n", prescaler, 72000/(prescaler+2));
+        printf("Configuring SDIO with prescaler %d (freq=%dkHz)\n", prescaler, 48000/(prescaler+2));
     SDIO_InitTypeDef initStruct;
     initStruct.ClockEdge = SDIO_CLOCK_EDGE_RISING;
     initStruct.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;

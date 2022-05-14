@@ -60,7 +60,7 @@ void SPIDriver::init(unsigned int prescaler)
     // Calculate prescaler value
     if(prescaler < 2)
         prescaler = 2;
-    unsigned int freq = 72000/prescaler;
+    unsigned int freq = 48000/prescaler;
     uint32_t div = LL_SPI_BAUDRATEPRESCALER_DIV2;
     for(unsigned int p = prescaler/4; p != 0; p /= 2)
         div++;

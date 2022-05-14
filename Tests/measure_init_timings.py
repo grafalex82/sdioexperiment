@@ -166,7 +166,7 @@ sd.setVerbose(False)
 
 # SPI initialization does not work without SDIO (for some reason)
 print("Run SDIO tests")
-sd.init("SDIO", 178)
+sd.init("SDIO", 122)
 sd.reset()
 sd.cmd0()
 

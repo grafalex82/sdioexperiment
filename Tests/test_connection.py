@@ -7,7 +7,9 @@ from protocol import SdProtocol
 
 @pytest.fixture(scope="session", autouse=True)
 def sd():
-    yield SdProtocol()
+    sd = SdProtocol()
+    sd.setVerbose(True)
+    yield sd
 
 
 def test_loopback(sd):
@@ -31,7 +33,7 @@ def test_loopback_error_msg(sd):
 
 
 def test_sdio_init(sd):
-    sd.init("SDIO", 178)
+    sd.init("SDIO", 118)
     sd.reset()    
     sd.cmd0()
     cardver = sd.cmd8()
@@ -58,7 +60,7 @@ def test_sdio_init(sd):
 
 def test_spi_init(sd):
     # SPI initialization does not work without SDIO (for some reason)
-    sd.init("SDIO", 178)
+    sd.init("SDIO", 118)
     sd.reset()
     sd.cmd0()
 
