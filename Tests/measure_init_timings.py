@@ -7,7 +7,7 @@ tickFreq = 100 # kHz
 
 sd = SdProtocol()
 
-def measureFullInitTimeSDIO():
+def measureFullInitTime():
     sd.resetTimer()
 
     sd.reset()
@@ -33,7 +33,7 @@ def measureFullInitTimeSDIO():
     return duration / tickFreq
 
 
-def measureBusyTimeSDIO():
+def measureBusyTime():
     sd.reset()
     sd.cmd0()
     cardver = sd.cmd8()
@@ -60,7 +60,7 @@ def measureBusyTimeSDIO():
     return duration / tickFreq
 
 
-def measureNumRetriesSDIO():
+def measureNumRetries():
     sd.reset()
     sd.cmd0()
     cardver = sd.cmd8()
@@ -98,104 +98,46 @@ def measureNativeRetries():
     return int(resp.value.split(' ')[1])
 
 
-def measureBusyTimeSPI():
-    sd.reset()
-    sd.cmd0()
-    cardver = sd.cmd8()
-    if cardver == 1:
-        sd.cmd0()
-
-    sd.resetTimer()
-
-    status = "Busy"
-    retries = 0
-    while status == "Busy":
-        status = sd.acmd41(cardver > 1)
-        retries += 1
-        assert(retries < 50)
-    assert(status == "Valid")
-
-    sdhc = sd.cmd58()
-
-    duration = sd.getElapsedTime()
-    
-    return duration / tickFreq
-
-
-def measureFullInitTimeSPI():
-    sd.resetTimer()
-
-    sd.reset()
-    sd.cmd0()
-    cardver = sd.cmd8()
-    if cardver == 1:
-        sd.cmd0()
-
-    status = "Busy"
-    retries = 0
-    while status == "Busy":
-        status = sd.acmd41(cardver > 1)
-        retries += 1
-        assert(retries < 50)
-    assert(status == "Valid")
-    duration = sd.getElapsedTime()
-
-    sdhc = sd.cmd58()
-
-    return duration / tickFreq
-
-
-def measureNumRetriesSPI():
-    sd.reset()
-    sd.cmd0()
-    cardver = sd.cmd8()
-    if cardver == 1:
-        sd.cmd0()
-
-    status = "Busy"
-    retries = 0
-    while status == "Busy":
-        status = sd.acmd41(cardver > 1)
-        retries += 1
-        assert(retries < 50)
-    assert(status == "Valid")
-
-    sdhc = sd.cmd58()
-
-    return retries
-
-
-
-def runMeasurement(headline, fn, count):
+def runMeasurement(headline, fn, count, log = None):
     values = [fn() for i in range(count) ]
     avgValue = median(values)
     minValue = min(values)
     maxValue = max(values)
     print(f"{headline}: {avgValue:.2f} ({minValue:.2f} - {maxValue:.2f})");
 
+    if log is not None:
+        log.write(f"{avgValue:.2f} ({minValue:.2f} - {maxValue:.2f})\n")
+        log.flush()
 
-count = 20
+
+count = 50
 sd.setVerbose(False)
+
+sd.init("SDIO", 118)
+sd.reset()
+sd.cmd0()
+
+f = open("initTimeMeasurement.txt", "wt")
 
 # SPI initialization does not work without SDIO (for some reason)
 print("Run SDIO tests")
-for prescaler in [238, 118, 94, 46, 6, 2, 0]:
+for prescaler in [238, 118, 46, 6, 2, 0]: # Run at 200 kHz, 400 kHz, 1MHz, 6 Mhz, 12 MHz, 24 MHz
     freq = 48000 / (prescaler + 2)
     print(f"Running SDIO at {freq} kHz")
     sd.init("SDIO", prescaler)
     sd.reset()
     sd.cmd0()
 
-    runMeasurement("Full init sequence, SDIO Mode", measureFullInitTimeSDIO, count)
-    runMeasurement("Busy time, SDIO Mode", measureBusyTimeSDIO, count)
-    runMeasurement("Number of retries, SDIO Mode", measureNumRetriesSDIO, count)
-    runMeasurement("Native init sequence, SDIO Mode", measureNativeInitTime, count)
-    runMeasurement("Native Busy time, SDIO Mode", measureNativeBusyTime, count)
-    runMeasurement("Native Number of retries, SDIO Mode", measureNativeRetries, count)
+    runMeasurement("Full init sequence, SDIO Mode", measureFullInitTime, count, f)
+    runMeasurement("Busy time, SDIO Mode", measureBusyTime, count, f)
+    runMeasurement("Number of retries, SDIO Mode", measureNumRetries, count, f)
+    runMeasurement("Native init sequence, SDIO Mode", measureNativeInitTime, count, f)
+    runMeasurement("Native Busy time, SDIO Mode", measureNativeBusyTime, count, f)
+    runMeasurement("Native Number of retries, SDIO Mode", measureNativeRetries, count, f)
 
 print("Run SPI tests")
 
-for i in range(1, 8):
+for i in range(0, 8):
     div = 7-i
     freq = 24000 >> div
     print(f"Running SPI at {freq} kHz")
@@ -204,10 +146,10 @@ for i in range(1, 8):
     sd.reset()
     sd.cmd0()
     
-    runMeasurement("Full init sequence, SPI Mode", measureFullInitTimeSPI, count)
-    runMeasurement("Busy time, SPI Mode", measureBusyTimeSPI, count)
-    runMeasurement("Number of retries, SPI Mode", measureNumRetriesSPI, count)
-    runMeasurement("Native init sequence, SPI Mode", measureNativeInitTime, count)
-    runMeasurement("Native Busy time, SPI Mode", measureNativeBusyTime, count)
-    runMeasurement("Native Number of retries, SPI Mode", measureNativeRetries, count)
+    runMeasurement("Full init sequence, SPI Mode", measureFullInitTime, count, f)
+    runMeasurement("Busy time, SPI Mode", measureBusyTime, count, f)
+    runMeasurement("Number of retries, SPI Mode", measureNumRetries, count, f)
+    runMeasurement("Native init sequence, SPI Mode", measureNativeInitTime, count, f)
+    runMeasurement("Native Busy time, SPI Mode", measureNativeBusyTime, count, f)
+    runMeasurement("Native Number of retries, SPI Mode", measureNativeRetries, count, f)
 
