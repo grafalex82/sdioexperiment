@@ -194,8 +194,10 @@ void cmdInitCard(const char * argument)
     uint32_t tstart = getTick();
 
     int retries = 0;
-    for(;; retries++)
+    for(;;)
     {
+        retries++;
+
         driver->cmd55_sendAppCommand();
         bool valid = driver->acmd41_sendAppOpConditions(v2card);
         if(valid)
