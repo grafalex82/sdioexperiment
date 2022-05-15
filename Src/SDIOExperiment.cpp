@@ -203,7 +203,7 @@ void cmdInitCard(const char * argument)
         if(valid)
             break;
 
-        if(getTick() - tstart > getTickFreq()) // timeout - 1s
+        if(getTick() - tstart > 3*getTickFreq()) // timeout - 3s
         {
             printf("ERROR Card busy after %d retries\n", retries);
             return;
