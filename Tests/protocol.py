@@ -118,6 +118,9 @@ class SdProtocol:
         resp = self.sendCommand("CMD10 " + str(rca))
         return resp.log     # The log contains a dump of CID register
 
+    def initCard(self):
+        self.sendCommand("INIT_CARD")
+
     def resetTimer(self):
         self.tstart = 0
 

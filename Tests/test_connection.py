@@ -84,3 +84,12 @@ def test_spi_init(sd):
     sd.cmd2()
     sd.cmd9(0)
 
+
+def test_spi_init_native(sd):
+    # SPI initialization does not work without SDIO (for some reason)
+    sd.init("SDIO", 118)
+    sd.reset()
+    sd.cmd0()
+
+    sd.init("SPI", 256)
+    sd.initCard()
