@@ -24,6 +24,10 @@ static const uint8_t R1_ILLEGAL_COMMAND = 0x04;
 
 static GPIO_TypeDef * const		LED2_PORT		= GPIOB;
 static const uint32_t			LED2_PIN		= LL_GPIO_PIN_10;
+static GPIO_TypeDef * const		LED3_PORT		= GPIOC;
+static const uint32_t			LED3_PIN		= LL_GPIO_PIN_4;
+static GPIO_TypeDef * const		LED4_PORT		= GPIOA;
+static const uint32_t			LED4_PIN		= LL_GPIO_PIN_4;
 
 
 SPIDriver::SPIDriver()
@@ -155,9 +159,14 @@ void SPIDriver::receive(uint8_t * buf, size_t len)
 
 void SPIDriver::readData(uint8_t * buf, size_t len)
 {
+    LL_GPIO_ResetOutputPin(LED3_PORT, LED3_PIN);
+
     // Wait for tocken
     while(receiveByte() == 0xff)
         ;
+
+
+    LL_GPIO_SetOutputPin(LED3_PORT, LED3_PIN);
 
     // Read the data
     receive(buf, len);
@@ -201,9 +210,13 @@ void SPIDriver::sendCommand(int cmd, int arg)
 
 uint8_t SPIDriver::waitForR1()
 {
+    LL_GPIO_ResetOutputPin(LED4_PORT, LED4_PIN);
+
     uint8_t r;
     while((r = receiveByte()) == 0xff) //0xff - card has not yet responded
         ;
+
+    LL_GPIO_SetOutputPin(LED4_PORT, LED4_PIN);
 
     return r;
 }

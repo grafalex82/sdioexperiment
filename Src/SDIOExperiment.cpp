@@ -182,6 +182,8 @@ void cmd10_getCID(const char * argument)
 
 void cmdInitCard(const char * argument)
 {
+    LL_GPIO_ResetOutputPin(LED1_PORT, LED1_PIN);
+
     // Perform full init sequence for a card
     driver->reset();
     delayMs(1);
@@ -218,6 +220,8 @@ void cmdInitCard(const char * argument)
 
     driver->cmd2_getCID();
     driver->cmd3_getRCA();
+
+    LL_GPIO_SetOutputPin(LED1_PORT, LED1_PIN);
 
     printf("OK %lu %d\n", tend-tstart, retries);
 }
