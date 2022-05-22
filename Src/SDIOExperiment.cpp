@@ -184,6 +184,8 @@ void cmdInitCard(const char * argument)
 {
     // Perform full init sequence for a card
     driver->reset();
+    delayMs(1);
+
     driver->cmd0_goIdleState();
     bool v2card = driver->cmd8_sendInterfaceConditions();
     if(!v2card)
