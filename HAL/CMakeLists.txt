@@ -92,7 +92,7 @@ SET(HAL_SRC
 #	STM32F1/HAL_Src/stm32f1xx_hal_eth.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_flash.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_flash_ex.c
-	STM32F1/HAL_Src/stm32f1xx_hal_gpio.c
+#	STM32F1/HAL_Src/stm32f1xx_hal_gpio.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_gpio_ex.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_hcd.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_i2c.c
@@ -107,13 +107,13 @@ SET(HAL_SRC
 #	STM32F1/HAL_Src/stm32f1xx_hal_pcd.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_pcd_ex.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_pwr.c
-	STM32F1/HAL_Src/stm32f1xx_hal_rcc.c
-	STM32F1/HAL_Src/stm32f1xx_hal_rcc_ex.c
+#	STM32F1/HAL_Src/stm32f1xx_hal_rcc.c
+#	STM32F1/HAL_Src/stm32f1xx_hal_rcc_ex.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_rtc.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_rtc_ex.c
-	STM32F1/HAL_Src/stm32f1xx_hal_sd.c
+#	STM32F1/HAL_Src/stm32f1xx_hal_sd.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_smartcard.c
-	STM32F1/HAL_Src/stm32f1xx_hal_spi.c
+#	STM32F1/HAL_Src/stm32f1xx_hal_spi.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_spi_ex.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_sram.c
 #	STM32F1/HAL_Src/stm32f1xx_hal_tim.c

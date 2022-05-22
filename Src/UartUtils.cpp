@@ -1,7 +1,7 @@
 #include <stm32f1xx_ll_bus.h>
 #include <stm32f1xx_ll_gpio.h>
 #include <stm32f1xx_ll_usart.h>
-#include <stm32f1xx_hal_rcc.h>
+#include <stm32f1xx_ll_rcc.h>
 
 #include "UartUtils.h"
 
@@ -32,7 +32,9 @@ void initUART()
     LL_USART_Disable(USART1);
 
     // Init
-    LL_USART_SetBaudRate(USART1, HAL_RCC_GetPCLK2Freq(), 115200);
+    LL_RCC_ClocksTypeDef clocks;
+    LL_RCC_GetSystemClocksFreq(&clocks);
+    LL_USART_SetBaudRate(USART1, clocks.PCLK2_Frequency, 115200);
     LL_USART_SetDataWidth(USART1, LL_USART_DATAWIDTH_8B);
     LL_USART_SetStopBitsLength(USART1, LL_USART_STOPBITS_1);
     LL_USART_SetParity(USART1, LL_USART_PARITY_NONE);
