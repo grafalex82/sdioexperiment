@@ -130,7 +130,8 @@ void SDIODriver::cmd55_sendAppCommand()
 bool SDIODriver::acmd41_sendAppOpConditions(bool hostSupportSdhc)
 {
     // send our capability of handling SDHC cards
-    uint32_t r = SDMMC_CmdAppOperCommand(SDIO, hostSupportSdhc ? SDMMC_HIGH_CAPACITY : SDMMC_STD_CAPACITY);
+    uint32_t s18r = 0x01000000;
+    uint32_t r = SDMMC_CmdAppOperCommand(SDIO, s18r | (hostSupportSdhc ? SDMMC_HIGH_CAPACITY : SDMMC_STD_CAPACITY));
     if(getVerboseLevel()) printf("ACMD41 error code: %08lx\n", r);
 
     r = SDIO_GetResponse(SDIO, SDIO_RESP1);
